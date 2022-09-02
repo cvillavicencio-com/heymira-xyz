@@ -1,4 +1,3 @@
-
 -- -- quema todo...
 SET FOREIGN_KEY_CHECKS = 0;
 drop table if exists Comments;
@@ -87,21 +86,36 @@ CREATE TABLE States(
 );
 
 INSERT INTO States (nombre) VALUES ('visible');
-INSERT INTO States (nombre) VALUES ('borrador');
 INSERT INTO States (nombre) VALUES ('eliminado');
+INSERT INTO States (nombre) VALUES ('borrador');
 
 CREATE TABLE Links (
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+       info     VARCHAR(500) NOT NULL,
        url      VARCHAR(200) NOT NULL,
-       texto    VARCHAR(500) NOT NULL,
+       urlextra VARCHAR(200),
        creado   TIMESTAMP NOT NULL,
        autorId  INT NOT NULL,
        FOREIGN KEY (autorId) REFERENCES Users(id),     
        topicId  INT NOT NULL,
        FOREIGN KEY (topicId) REFERENCES Topics(id),
-       stateId  INT NOT NULL,
+       stateId  INT NOT NULL DEFAULT 1,
        FOREIGN KEY (stateId) REFERENCES States(id)
 );
+
+CREATE VIEW Linksinfo AS
+SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
+       Users.id AS 'usrid', Users.nombre AS 'user',
+       Topics.id AS 'topicid', Topics.nombre AS 'topic',
+       Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
+       Categories.id AS 'catid', Categories.nombre As 'cat'
+FROM Links
+       INNER JOIN Users ON Links.autorId = Users.id
+       INNER JOIN Topics ON Links.topicId = Topics.id
+       INNER JOIN Subcategories ON Topics.subcatId = Subcategories.id
+       INNER JOIN Categories ON Subcategories.categId = Categories.id
+;
+
 
 CREATE TABLE Comments(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,

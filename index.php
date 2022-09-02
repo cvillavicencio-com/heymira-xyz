@@ -12,15 +12,15 @@ if (isset($_SESSION['log'])){
     $id=$_SESSION['log'];
     $log = true;
     $menu = array(
-        array('Nuevo link','nl'),
-        array('Perfil','up'),
-	array('Cerrar sesión','ss')
+        array('<span class="icon-energy"></span>','nl'),
+        array('<span class="icon-user"></span>','up'),
+	array('<span class="icon-logout"></span>','ss')
     );
 } else {
     $log = false;
     $menu = array(
-        array('Iniciar sesión','is'),
-        array('Crear cuenta','cc')
+        array('<span class="icon-login"></span>','is'),
+        array('<span class="icon-key"></span>','cc'),
     );
 }
 
@@ -155,7 +155,7 @@ aca va una imagen bonita.
 	    if ($result->num_rows != 0) {	    
 		if ($laclave[0] == $clave){
 		    $_SESSION["log"]=$laclave[1];
-		    $contenido[]='sesión iniciada correctamente';
+		    $contenido[]='<img src="logo.png" onload="window.location.replace(\'/.\');"><p>sesión iniciada correctamente</p>';
 		} else {
 	    	    $contenido[]='contraseña incorrecta';
 		}		
@@ -169,7 +169,7 @@ aca va una imagen bonita.
 	    $m=false;
 	    unset($_SESSION['log']);	    
 	    $contenido[] = 'Sesión cerrada';
-	    $contenido[] = '<p>te has desconectado.</p>
+	    $contenido[] = '<p onload="window.location.replace(\'/.\');">te has desconectado.</p>
 	    ';
 	    break;
 
@@ -182,7 +182,7 @@ aca va una imagen bonita.
 	    //	    print_r($perfil);
 	    
 	    $contenido[] = 'imagen bonita';
-	    //	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false; 
+	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false; 
 	    $contenido[] = '
 <div class="card">
   <div class="card-content">
@@ -210,11 +210,6 @@ cont';
 
 	    
 	case 'nl':
-
-
-
-
-	    
 	    if (!$log){$contenido=nologged();break;}
 	    $cats ='';
 	    $contenido[] = 'Nuevo link';
@@ -269,39 +264,139 @@ cont';
 		$cats .= 'no hay cats';
 	    }
 	    $contenido[] = '
+<form action="./?f=al" method="POST">
 <div class="columns is-centered">
-  <div class="column is-half ">
-<div class="field">
-  <label class="label">URL</label>
-  <div class="control">
-    <input class="input" type="text" placeholder="Text input">
-  </div>
-
-</div>
-
-<div class="field">
-  <label class="label">Descripción</label>
-  <div class="control">
-    <input class="input" type="text" placeholder="Text input">
-  </div>
-</div>
-
-<div class="field">
-  <label class="label">Tema</label>
+  <div class="column is-half">
+    <div class="field">
+      <label class="label">Descripción</label>
+      <div class="control">
+        <input name="info" class="input" type="text" placeholder="De qué trata este link">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">URL</label>
+      <div class="control">
+        <input name="url" class="input" type="text" placeholder="Dirección del link">
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Tema</label>
 	    '.$cats.'
-</div>
+    </div>
+
+    <div class="columns is-mobile">
+      <div class="column">
+        <div class="field">
+          <label class="label is-small">URL extra (opcional)</label>
+          <div class="control">
+            <input name="urlextra" class="input  is-small" type="text" placeholder="Respaldo o link relacionado al mismo tema">
+          </div>
+        </div>
+      </div>
+      <div class="column">
+       <div class="control">
+         <button type="submit" class="button is-primary is-large">Agregar link</button>
+       </div>
+      </div>
+    </div>
+
+
+
   </div>
-
 </div>
-
 	    ';
 	    break;
 
+	case 'al':
+	    $m=false;
+	    if (!$log){$contenido=nologged();break;}
+	    $contenido[]='Agregando link';
+	    // recibe datos:
+	    $info=cleanpost('info');
+	    $url=cleanpost('url');
+	    $urlextra=cleanpost('urlextra');
+	    $topicid=intval(cleanpost('topic'));
+
+	    // query opcionales: urlextra
+	    $urlextraq = $urlextra ? array(', urlextra',", '$urlextra'") : array(false,false);
+	    
+	    // verificar si link ya existe
+	    $al = "SELECT id FROM Links WHERE url = '$url';";
+	    $result= $conn->query($al);
+	    if ($result->num_rows == 0){ // link no existe. bien
+		$ahora = date('Y-m-d H:i:s');
+		$l = "INSERT INTO Links (info, url, topicId, creado, autorId {$urlextraq[0]}) VALUES ('$info','$url','$topicid', '$ahora', '$id' {$urlextraq[1]});";
+		$resultl=$conn->query($l) or die(mysqli_error($conn));
+		if (!empty($resultl)){
+		    $contenido[] ='Link creado.';
+		} else {
+		    $contenido[] = 'error';
+		}
+	    } else {
+		$contenido[]='El link no se agregó porque ya estaba anteriormente.';
+	    }
+	    
+	    break;
+	default:
+	    $contenido[]='aaa?';
+	    $contenido[]='eee?';
+	    break;
     }
-} else {
+} elseif (isset($_GET['l'])){
+    
+    // ver link
+    $l = cleanget('l');
+    switch($l){
+	default:
+	    echo '';
+    }
+
+    
     $contenido[]='aaa';
     $contenido[]='eee';
     
+} else {
+    $contenido[]='rly nada';
+    $listalinks='
+<div class="columns">';
+    
+    //listado de links
+
+    $sql = "SELECT * FROM Linksinfo;";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+	$columncount=1;
+	$listaok=true;
+	while($row = $result->fetch_assoc()) {
+	    $listalinks .= '
+<div class="column">
+<a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a> subido por <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a><br>
+<a href="#">'.$row['cat'].'</a> / <a href="#">'.$row['subcat'].'</a> / <a href="#">'.$row['topic'].'</a>
+</div>';
+	    if (is_int($columncount/3)){
+		$listalinks .='</div> <div class="columns">';
+		$listaok=false;
+	    } else {
+		$listaok=true;
+	    }
+	    $columncount++;
+	    
+	    /*
+	       SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
+	       Users.id AS 'usrid', Users.nombre AS 'user',
+	       Topics.id AS 'topicid', Topics.nombre AS 'topic',
+	       Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
+	       Categories.id AS 'catid', Categories.nombre As 'cat'
+	     */ 
+
+	    
+	    //    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
+	}
+    }
+    $listalinks.='</div>';
+
+    $contenido[]=$listalinks;
 }
 
 
@@ -315,49 +410,38 @@ cont';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico"> 
     <script type="text/javascript" src="js/script.js" defer></script>
   </head>
   <body>
-      <nav class="has-background-primary navbar" role="navigation" aria-label="main navigation">
+      <nav class="has-background-primary navbar"  role="navigation" aria-label="main navigation">
 	  <div class="navbar-brand">
 	      <a class="navbar-item" href="https://bulma.io">
-		  <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+		  <img src="logo.gif" width="112" height="28">
 	      </a>
-
-	      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-		  <span aria-hidden="true"></span>
-		  <span aria-hidden="true"></span>
-		  <span aria-hidden="true"></span>
-	      </a>
-	  </div>
-
-	  <div id="navbarBasicExample" class="navbar-menu">
-	      <div class="navbar-start">
-	      </div>
-
-	      <div class="navbar-end">
-		  <div class="navbar-item">
-		      <div class="buttons">
-			  <?php
-			  if ($m){
-			      foreach($menu as &$boton){
-				  echo '
+	      <div class="buttons">
+		  <?php
+		  if ($m){
+		      foreach($menu as &$boton){
+			  echo '
 	      <a href="?f='.$boton[1].'" class="button">
 		  <strong>'.$boton[0].'</strong>
               </a>';
-			      }
-			  } else {
-			      echo'<a href="." class="button">
+		      }
+		  } else {
+		      echo'<a href="." class="button">
 		  <strong>Volver al inicio</strong>
               </a>
-			  ';
-			  }
-			  ?>
-		      </div>
-		  </div>
+		      ';
+		  }
+		  ?>
 	      </div>
+
 	  </div>
+	  
+
       </nav>
       
       <section class="section ">
@@ -373,7 +457,17 @@ cont';
 	    ?>
 
     </div>
-  </section>
+      </section>
+
+      <footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+	<strong>Heymira</strong>.
+	<a href="https://github.com/cvillavicencio-com/heymira-xyz" target="_blank"><span class="icon-social-github"></span></a>.
+      is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+    </p>
+  </div>
+      </footer>
   </body>
 </html>
 
