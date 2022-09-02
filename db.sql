@@ -47,8 +47,8 @@ CREATE TABLE Categories(
        nombre   VARCHAR(30) NOT NULL
 );
 
-INSERT INTO Categories (nombre) VALUES ('Animales');
-INSERT INTO Categories (nombre) VALUES ('Materia');
+-- INSERT INTO Categories (nombre) VALUES ('Animales');
+-- INSERT INTO Categories (nombre) VALUES ('Materia');
 
 CREATE TABLE Subcategories(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -56,30 +56,30 @@ CREATE TABLE Subcategories(
        categId  INT NOT NULL,
        FOREIGN KEY (categId) REFERENCES Categories(id)
 );
-INSERT INTO Subcategories (nombre,categId) VALUES ('Mamiferos',1);
-INSERT INTO Subcategories (nombre,categId) VALUES ('Ovíparos',1);
-INSERT INTO Subcategories (nombre,categId) VALUES ('Solido',2);
-INSERT INTO Subcategories (nombre,categId) VALUES ('Gaseoso',2);
-INSERT INTO Subcategories (nombre,categId) VALUES ('Liquido',2);
+-- INSERT INTO Subcategories (nombre,categId) VALUES ('Mamiferos',1);
+-- INSERT INTO Subcategories (nombre,categId) VALUES ('Ovíparos',1);
+-- INSERT INTO Subcategories (nombre,categId) VALUES ('Solido',2);
+-- INSERT INTO Subcategories (nombre,categId) VALUES ('Gaseoso',2);
+-- INSERT INTO Subcategories (nombre,categId) VALUES ('Liquido',2);
 
 
-CREATE TABLE Topics(
+Create TABLE Topics(
        id        INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-       nombre    VARCHAR(30) NOT NULL,
+       nombre    VARCHAR(40) NOT NULL,
        subcatId  INT NOT NULL,
        FOREIGN  KEY (subcatId) REFERENCES Subcategories(id)
 );
-INSERT INTO Topics (nombre,subcatId) VALUES ('Perros',1);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Gatos',1);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Aves',2);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Peces',2);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Perros',1);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Gatos',1);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Aves',2);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Peces',2);
 
-INSERT INTO Topics (nombre,subcatId) VALUES ('Rocas',3);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Madera',3);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Plastico',3);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Helio',4);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Agua',5);
-INSERT INTO Topics (nombre,subcatId) VALUES ('Café',5);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Rocas',3);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Madera',3);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Plastico',3);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Helio',4);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Agua',5);
+-- INSERT INTO Topics (nombre,subcatId) VALUES ('Café',5);
 
 CREATE TABLE States(
        id	 INT PRIMARY KEY NOT NULL AUTO_INCREMENT,

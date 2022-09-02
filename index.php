@@ -170,10 +170,6 @@ aca va una imagen bonita.
 	    unset($_SESSION['log']);	    
 	    $contenido[] = 'Sesión cerrada';
 	    $contenido[] = '<p>te has desconectado.</p>
-
-<div class="buttons"><a href=".">
-  <button class="button is-primary is-light">Volver al inicio</button></a>
-</div>
 	    ';
 	    break;
 
@@ -226,28 +222,31 @@ cont';
 	    $resultc = $conn->query($sqlc);
 
 	    $colcol=0;
+	    $colcolsub=0;
 	    if ($resultc->num_rows > 0) {
 		$cats .= '<div style="max-height: 200px; overflow-y:scroll; overflow-x:hidden;">';
 		while($rowc = $resultc->fetch_assoc()) {
-		    $color = (is_int($colcol/2)) ? 'has-background-grey-lighter ': false;
+		    $color = (is_int($colcol/2)) ? 'has-background-grey-light ': false;
 		    $colcol++;
-		    $cats .='<div class="columns">';
-		    $cats .= '<div class="column '.$color.' is-one-quarter">'.$rowc['nombre'].'</div>';
+		    $cats .='<div class="columns is-mobile">';
+		    $cats .= '<div class="column '.$color.' is-one-quarter"><p style="position:sticky; top:0px;">'.$rowc['nombre'].'</p></div>';
 		    $sqls = "SELECT id, nombre FROM Subcategories WHERE categId='".$rowc['id']."';";
 		    $results = $conn->query($sqls);
 		    $cats .= '<div class="column">';
 		    if ($results->num_rows > 0) {
 			while($rows = $results->fetch_assoc()) {
-			    $cats .= '<div class="columns '.$color.'">';
-			    $cats .= '<div class="column is-one-quarter">'.$rows['nombre'].'</div>';
+			    $colorsub = (is_int($colcolsub/2)) ? 'has-background-grey-lighter ': false;
+			    $colcolsub++;
+			    $cats .= '<div class="columns is-mobile '.$colorsub.'">';
+			    $cats .= '<div class="column '.$colorsub.'is-one-quarter"><p style="position:sticky; top:0px;">'.$rows['nombre'].'</p></div>';
 			    $sqlt = "SELECT id, nombre FROM Topics WHERE subcatId='".$rows['id']."';";
 			    $resultt = $conn->query($sqlt);
-			    $cats .= '<div class="column">';
+			    $cats .= '<div class="column is-mobile">';
 			    if ($results->num_rows > 0) {
 				$cats .= '<ul>';
 				while($rowt = $resultt->fetch_assoc()) {
 				    $cats .= '
-<li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'"> '.$rowt['nombre'].'</label></li>';
+	       <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'"> '.$rowt['nombre'].'</label></li>';
 				}
 				$cats .= '</ul></div>';
 			    } else {
@@ -269,13 +268,6 @@ cont';
 	    } else {
 		$cats .= 'no hay cats';
 	    }
-
-
-
-
-
-	    
-	    
 	    $contenido[] = '
 <div class="columns is-centered">
   <div class="column is-half ">
@@ -342,35 +334,6 @@ cont';
 
 	  <div id="navbarBasicExample" class="navbar-menu">
 	      <div class="navbar-start">
-		  <a class="navbar-item">
-		      Home
-		  </a>
-
-		  <a class="navbar-item">
-		      Documentation
-		  </a>
-
-		  <div class="navbar-item has-dropdown is-hoverable">
-		      <a class="navbar-link">
-			  More
-		      </a>
-
-		      <div class="navbar-dropdown">
-			  <a class="navbar-item">
-			      About
-			  </a>
-			  <a class="navbar-item">
-			      Jobs
-			  </a>
-			  <a class="navbar-item">
-			      Contact
-			  </a>
-			  <hr class="navbar-divider">
-			  <a class="navbar-item">
-			      Report an issue
-			  </a>
-		      </div>
-		  </div>
 	      </div>
 
 	      <div class="navbar-end">
