@@ -155,7 +155,7 @@ aca va una imagen bonita.
 	    if ($result->num_rows != 0) {	    
 		if ($laclave[0] == $clave){
 		    $_SESSION["log"]=$laclave[1];
-		    $contenido[]='<img src="logo.png" onload="window.location.replace(\'/.\');"><p>sesión iniciada correctamente</p>';
+		    $contenido[]='<img src="logo.png" onload="window.location.replace(\'/heymira\');"><p>sesión iniciada correctamente</p>';
 		} else {
 	    	    $contenido[]='contraseña incorrecta';
 		}		
@@ -182,7 +182,50 @@ aca va una imagen bonita.
 	    //	    print_r($perfil);
 	    
 	    $contenido[] = 'imagen bonita';
-	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false; 
+	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false;
+
+	    // esto está bien programado, pero es redundante: debe ser una clase!
+	    $listalinks='
+<div class="columns">';
+
+	    $sql = "SELECT * FROM Linksinfo WHERE usrid = '$id' ORDER BY id DESC;";
+	    $result = $conn->query($sql);
+
+	    if ($result->num_rows > 0) {
+		$columncount=1;
+		$listaok=true;
+		while($row = $result->fetch_assoc()) {
+		    $listalinks .= '
+<div class="column">
+<span class="link"><a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a></span><br>
+<span class="autor"><span class="icon-arrow-up-circle"></span> <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span> - 
+<span class="categ"><a href="#">'.substr($row['cat'],0,1).'</a> / <a href="#">'.substr($row['subcat'],0,1).'</a> / <a href="#">'.$row['topic'].'</a></span>
+</div>
+';
+		    if (is_int($columncount/2)){
+			$listalinks .='</div> <div class="columns">';
+			$listaok=false;
+		    } else {
+			$listaok=true;
+		    }
+		    $columncount++;
+		    
+		    /*
+		       SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
+		       Users.id AS 'usrid', Users.nombre AS 'user',
+		       Topics.id AS 'topicid', Topics.nombre AS 'topic',
+		       Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
+		       Categories.id AS 'catid', Categories.nombre As 'cat'
+		     */ 
+
+		    
+		    //    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
+		}
+	    }
+	    $listalinks.='</div>';
+
+
+	    
 	    $contenido[] = '
 <div class="card">
   <div class="card-content">
@@ -199,13 +242,12 @@ aca va una imagen bonita.
 	    '.$perfil[2].'
       </div>
     </div>
-<div class="content">
-
-    </div>
   </div>
 </div>
+    <div class="content">'.$listalinks.'
+    </div>
 
-cont';
+    ';
 	    break;
 
 	    
@@ -356,13 +398,13 @@ cont';
     $contenido[]='eee';
     
 } else {
-    $contenido[]='rly nada';
+    $contenido[]='Links *';
     $listalinks='
 <div class="columns">';
     
     //listado de links
 
-    $sql = "SELECT * FROM Linksinfo;";
+    $sql = "SELECT * FROM Linksinfo ORDER BY id DESC;";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -371,10 +413,12 @@ cont';
 	while($row = $result->fetch_assoc()) {
 	    $listalinks .= '
 <div class="column">
-<a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a> subido por <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a><br>
-<a href="#">'.$row['cat'].'</a> / <a href="#">'.$row['subcat'].'</a> / <a href="#">'.$row['topic'].'</a>
-</div>';
-	    if (is_int($columncount/3)){
+<span class="link"><a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a></span><br>
+<span class="autor"><span class="icon-arrow-up-circle"></span> <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span> - 
+<span class="categ"><a href="#">'.$row['cat'].'</a> / <a href="#">'.$row['subcat'].'</a> / <a href="#">'.$row['topic'].'</a></span>
+</div>
+';
+	    if (is_int($columncount/2)){
 		$listalinks .='</div> <div class="columns">';
 		$listaok=false;
 	    } else {
@@ -410,7 +454,8 @@ cont';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico"> 
     <script type="text/javascript" src="js/script.js" defer></script>
