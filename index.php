@@ -184,45 +184,6 @@ aca va una imagen bonita.
 	    $contenido[] = 'imagen bonita';
 	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false;
 
-	    // esto está bien programado, pero es redundante: debe ser una clase!
-	    $listalinks='
-<div class="columns">';
-
-	    $sql = "SELECT * FROM Linksinfo WHERE usrid = '$id' ORDER BY id DESC;";
-	    $result = $conn->query($sql);
-
-	    if ($result->num_rows > 0) {
-		$columncount=1;
-		$listaok=true;
-		while($row = $result->fetch_assoc()) {
-		    $listalinks .= '
-<div class="column">
-<span class="link"><a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a></span><br>
-<span class="autor"><span class="icon-arrow-up-circle"></span> <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span> - 
-<span class="categ"><a href="#">'.substr($row['cat'],0,1).'</a> / <a href="#">'.substr($row['subcat'],0,1).'</a> / <a href="#">'.$row['topic'].'</a></span>
-</div>
-';
-		    if (is_int($columncount/2)){
-			$listalinks .='</div> <div class="columns">';
-			$listaok=false;
-		    } else {
-			$listaok=true;
-		    }
-		    $columncount++;
-		    
-		    /*
-		       SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
-		       Users.id AS 'usrid', Users.nombre AS 'user',
-		       Topics.id AS 'topicid', Topics.nombre AS 'topic',
-		       Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
-		       Categories.id AS 'catid', Categories.nombre As 'cat'
-		     */ 
-
-		    
-		    //    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
-		}
-	    }
-	    $listalinks.='</div>';
 
 
 	    
@@ -235,6 +196,7 @@ aca va una imagen bonita.
           <div class="media-content">
             <p class="title is-4">'.$perfil[1].@$mail.'</p>
             <p class="subtitle is-6">'.$perfil[4].'</p>
+            <p class="subtitle is-6"><a href="?u='.$id.'">Ver links</a></p>
           </div>
         </div>
       </div>
@@ -244,10 +206,9 @@ aca va una imagen bonita.
     </div>
   </div>
 </div>
-    <div class="content">'.$listalinks.'
-    </div>
 
-    ';
+
+	    ';
 	    break;
 
 	    
@@ -385,7 +346,8 @@ aca va una imagen bonita.
 	    break;
     }
 } elseif (isset($_GET['l'])){
-    
+
+    // VISTA DE UN SOLO LINK
     // ver link
     $l = cleanget('l');
     switch($l){
@@ -397,14 +359,46 @@ aca va una imagen bonita.
     $contenido[]='aaa';
     $contenido[]='eee';
     
-} else {
-    $contenido[]='Links *';
+} else {    
+    $u=intval(cleanget('u'));
+    $cat=intval(cleanget('cat'));
+    //    $opcion = $u ? array("usuario="," WHERE usrid='$u' ") : false;
+
+    $opciontitulo='';
+    $opcionquery='';
+    $filtro='';
+
+    if ($u || $cat) {
+	$opcionquery=' WHERE ';
+	if ($u){
+	    $quser="SELECT nombre FROM Users WHERE id = '$u';";
+	    $ruser=$conn->query($quser)->fetch_row();
+	    $filtro.=' del usuario '.$ruser['0'];
+	    $opcionquery .=" usrid='$u' ";
+	}
+	if ($u && $cat){
+	    $opcionquery .=' AND ';
+	}
+	if ($cat){
+	    $qcat="SELECT nombre FROM Categories WHERE id = '$cat'";
+	    $rcat=$conn->query($qcat)->fetch_row();
+	    $filtro.=' dentro de la categoría '.$rcat['0'];
+	    $opcionquery .="  catid = '$cat' ";
+	    //	$cat =$rcat;
+	    
+	}
+    }
+    
+    
+    $contenido[]=' ';
     $listalinks='
+<div class="box is-half">Viendo links'.$filtro.'</div>
 <div class="columns">';
     
     //listado de links
 
-    $sql = "SELECT * FROM Linksinfo ORDER BY id DESC;";
+    $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC;";
+    echo $sql;
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -463,7 +457,7 @@ aca va una imagen bonita.
   <body>
       <nav class="has-background-primary navbar"  role="navigation" aria-label="main navigation">
 	  <div class="navbar-brand">
-	      <a class="navbar-item" href="https://bulma.io">
+	      <a class="navbar-item" href="http://localhost/heymira">
 		  <img src="logo.gif" width="112" height="28">
 	      </a>
 	      <div class="buttons">
