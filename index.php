@@ -226,8 +226,11 @@ aca va una imagen bonita.
 		while($rowc = $resultc->fetch_assoc()) {
 		    $color = (is_int($colcol/2)) ? 'has-background-grey-light ': false;
 		    $colcol++;
+
+		    $combocat[] = array($rowc['id'],$rowc['nombre']);
+		    
 		    $cats .='<div class="columns is-mobile">';
-		    $cats .= '<div class="column '.$color.' is-one-quarter"><p style="position:sticky; top:0px;">'.$rowc['nombre'].'</p></div>';
+		    $cats .='<div id="cat-'.$rowc['id'].'" class="column '.$color.' is-one-fifth"><p style="position:sticky; top:0px;">'.$rowc['nombre'].'</p></div>';
 		    $sqls = "SELECT id, nombre FROM Subcategories WHERE categId='".$rowc['id']."';";
 		    $results = $conn->query($sqls);
 		    $cats .= '<div class="column">';
@@ -235,16 +238,24 @@ aca va una imagen bonita.
 			while($rows = $results->fetch_assoc()) {
 			    $colorsub = (is_int($colcolsub/2)) ? 'has-background-grey-lighter ': false;
 			    $colcolsub++;
-			    $cats .= '<div class="columns is-mobile '.$colorsub.'">';
-			    $cats .= '<div class="column '.$colorsub.'is-one-quarter"><p style="position:sticky; top:0px;">'.$rows['nombre'].'</p></div>';
+			    $cats .= '<div class="columns is-1 is-mobile '.$colorsub.'">';
+			    $cats .= '<div class="column '.$colorsub.'is-one-fifth"><p style="position:sticky; top:0px;">'.$rows['nombre'].'</p></div>  <div class="is-divider-vertical" data-content="OR"></div>';
 			    $sqlt = "SELECT id, nombre FROM Topics WHERE subcatId='".$rows['id']."';";
 			    $resultt = $conn->query($sqlt);
 			    $cats .= '<div class="column is-mobile">';
 			    if ($results->num_rows > 0) {
 				$cats .= '<ul>';
+
 				while($rowt = $resultt->fetch_assoc()) {
+				    $elnombre=$rowt['nombre'];
+				    if (substr($elnombre,-12) == '[Unassigned]'){
+					$unassig = ' disabled';
+				    } else {
+					$unassig = '';
+				    }				    
+
 				    $cats .= '
-	       <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'"> '.$rowt['nombre'].'</label></li>';
+	       <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '.$unassig.'> '.$rowt['nombre'].'</label></li>';
 				}
 				$cats .= '</ul></div>';
 			    } else {
@@ -266,6 +277,26 @@ aca va una imagen bonita.
 	    } else {
 		$cats .= 'no hay cats';
 	    }
+	    $combo='
+<div class="field">
+  <p class="control has-icons-left">
+    <span class="select is-small">
+      <select onchange="jump();" id="combocats">';
+	    foreach ($combocat as &$comcat){
+		$combo .= '<option value="'.$comcat[0].'">'.$comcat[1] . '</option> - ';
+	    }
+
+	    $combo .= '
+      </select>
+    </span>
+    <span class="icon is-small is-left">
+<span class="is-red icon-eyeglass"></span>
+    </span>
+  </p>
+</div>
+	    ';
+	    $cats = $combo . $cats;
+	    
 	    $contenido[] = '
 <form action="./?f=al" method="POST">
 <div class="columns is-centered">
@@ -285,6 +316,13 @@ aca va una imagen bonita.
     <div class="field">
       <label class="label">Tema</label>
 	    '.$cats.'
+    </div>
+
+    <div class="field">
+      <label class="label is-small">Tags (separados por comas)</label>
+      <div class="control">
+        <input name="tags" class="input is-small" type="text" placeholder="tags, etiquetas, etc">
+      </div>
     </div>
 
     <div class="columns is-mobile">
@@ -317,6 +355,8 @@ aca va una imagen bonita.
 	    // recibe datos:
 	    $info=cleanpost('info');
 	    $url=cleanpost('url');
+	    $tags=cleanpost('tags');
+	    $tags=explode(',',$tags);
 	    $urlextra=cleanpost('urlextra');
 	    $topicid=intval(cleanpost('topic'));
 
@@ -331,9 +371,16 @@ aca va una imagen bonita.
 		$l = "INSERT INTO Links (info, url, topicId, creado, autorId {$urlextraq[0]}) VALUES ('$info','$url','$topicid', '$ahora', '$id' {$urlextraq[1]});";
 		$resultl=$conn->query($l) or die(mysqli_error($conn));
 		if (!empty($resultl)){
+		    $linkid = $conn->insert_id;
+		    $tq='';
+		    foreach($tags as &$tag){
+			$tag = (substr($tag,0,1) == ' ') ? substr($tag,1) : $tag;
+			$tq = "INSERT INTO Tagslinks (tag,linkid) VALUES ('$tag','$linkid');";
+			$resultag=$conn->query($tq) or die(mysqli_error($conn));
+		    }
 		    $contenido[] ='Link creado.';
 		} else {
-		    $contenido[] = 'error';
+		    $contenido[] = 'error guardando link';
 		}
 	    } else {
 		$contenido[]='El link no se agregó porque ya estaba anteriormente.';
@@ -398,7 +445,7 @@ aca va una imagen bonita.
     //listado de links
 
     $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC;";
-    echo $sql;
+    //    echo $sql;
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

@@ -1,6 +1,8 @@
 -- -- quema todo...
 SET FOREIGN_KEY_CHECKS = 0;
 drop table if exists Comments;
+drop table if exists Taglinks;
+drop view if exists  Linksinfo;
 drop table if exists Links;
 drop table if exists States;
 drop table if exists Topics;
@@ -43,7 +45,8 @@ FROM Users RIGHT JOIN Usertypes ON Users.utypeId = Usertypes.id
 
 CREATE TABLE Categories(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-       nombre   VARCHAR(30) NOT NULL
+       nombre   VARCHAR(50) NOT NULL,
+       orden 	INT
 );
 
 -- INSERT INTO Categories (nombre) VALUES ('Animales');
@@ -51,9 +54,10 @@ CREATE TABLE Categories(
 
 CREATE TABLE Subcategories(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-       nombre   VARCHAR(30) NOT NULL,
+       nombre   VARCHAR(50) NOT NULL,
        categId  INT NOT NULL,
-       FOREIGN KEY (categId) REFERENCES Categories(id)
+       FOREIGN KEY (categId) REFERENCES Categories(id),
+       orden    INT
 );
 -- INSERT INTO Subcategories (nombre,categId) VALUES ('Mamiferos',1);
 -- INSERT INTO Subcategories (nombre,categId) VALUES ('Ovíparos',1);
@@ -61,12 +65,12 @@ CREATE TABLE Subcategories(
 -- INSERT INTO Subcategories (nombre,categId) VALUES ('Gaseoso',2);
 -- INSERT INTO Subcategories (nombre,categId) VALUES ('Liquido',2);
 
-
 Create TABLE Topics(
        id        INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-       nombre    VARCHAR(40) NOT NULL,
+       nombre    VARCHAR(100) NOT NULL,
        subcatId  INT NOT NULL,
-       FOREIGN  KEY (subcatId) REFERENCES Subcategories(id)
+       FOREIGN  KEY (subcatId) REFERENCES Subcategories(id),
+       orden 	 INT
 );
 -- INSERT INTO Topics (nombre,subcatId) VALUES ('Perros',1);
 -- INSERT INTO Topics (nombre,subcatId) VALUES ('Gatos',1);
@@ -101,6 +105,12 @@ CREATE TABLE Links (
        FOREIGN KEY (topicId) REFERENCES Topics(id),
        stateId  INT NOT NULL DEFAULT 1,
        FOREIGN KEY (stateId) REFERENCES States(id)
+);
+
+CREATE TABLE Tagslinks(
+       tag VARCHAR(100) NOT NULL,
+       linkId INT NOT NULL,
+       FOREIGN KEY (linkId) REFERENCES Links(id)
 );
 
 CREATE VIEW Linksinfo AS
