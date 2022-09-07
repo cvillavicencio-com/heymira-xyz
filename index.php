@@ -206,10 +206,6 @@ aca va una imagen bonita.
 		}
 	    }
 
-	    
-
-
-	    
 	    $contenido[] = '
 <div class="card">
   <div class="card-content">
@@ -231,7 +227,7 @@ aca va una imagen bonita.
 </div>
 <div class="card">
   <div class="card-content">
-'.$linkstopics.'
+	    '.$linkstopics.'
   </div>
 </div>
 
@@ -445,6 +441,7 @@ aca va una imagen bonita.
     $cat=intval(cleanget('cat'));
     $sub=intval(cleanget('sub'));
     $top=intval(cleanget('top'));
+    $pag=intval(cleanget('pag'));
 
     //    $opcion = $u ? array("usuario="," WHERE usrid='$u' ") : false;
 
@@ -487,14 +484,17 @@ aca va una imagen bonita.
 
     $contenido[]=' ';
     $estasen='<div class="">Viendo links'.$filtro.'</div>';
-    $listalinks='
-<div class="columns">';
     
     //listado de links
 
-    $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC;";
+    $linksporpag=10;
+    $limit = $pag ? "LIMIT $linksporpag OFFSET ".($linksporpag * ($pag-1)) : 'LIMIT '.$linksporpag;
+    $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC $limit;";
     //        echo $sql;
     $result = $conn->query($sql);
+
+
+    $listalinks=' <div class="columns">';
 
     if ($result->num_rows > 0) {
 	$columncount=1;
@@ -531,6 +531,31 @@ aca va una imagen bonita.
 	}
     }
     $listalinks.='</div>';
+
+    $pagX = "SELECT COUNT(*) FROM Linksinfo $opcionquery ORDER BY creado DESC";
+    $pagq = $conn->query($pagX);
+    $pagr = $pagq->fetch_row();
+
+    //    echo $pagr[0]; // <-- este es el total de links q existen :-D
+    //paginación
+
+    $totalpags=($pagr[0]/$linksporpag);
+    $paginat=array(''.'');
+    for ($i=0; $i <= $totalpags; $i++) {
+	$o = $i+1;
+	$current = ($o == $pag) ? array(' is-current','aria-current="page"') : array('',''); 
+	$paginat[0] .= '<li><a href="?pag='.$o.'" class="pagination-link'.$current[0].'" aria-label="Goto page 2" '.$current[1].'>'.$o.'</a></li>'.PHP_EOL;	
+    }
+
+    $ant = ($pag > 1) ? array(($pag-1),'',($pag-1)) : array('#','is-disabled','No puedes avanzar más');
+    $sig = ($pag < $totalpags) ? array(($pag+1),'',($pag+1)) : array('#','is-disabled','No puedes retroceder más');
+    $listalinks .= '
+<nav class="pagination is-small" role="navigation" aria-label="pagination">
+  <a href="?pag='.$ant[0].'" class="pagination-previous '.$ant[1].'" title="'.$ant[2].'">Más reciente</a>
+  <a href="?pag='.$sig[0].'" class="pagination-next '.$sig[1].'" title="'.$sig[2].'">Más antiguo</a>
+  <ul class="pagination-list">'.$paginat[0].    ' </ul>
+</nav>
+  ';
 
     $contenido[]=$listalinks;
 }

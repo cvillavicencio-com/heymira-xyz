@@ -114,7 +114,7 @@ CREATE TABLE Tagslinks(
 );
 
 CREATE VIEW Linksinfo AS
-SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
+SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado, Links.stateId as 'stateid'
        Users.id AS 'usrid', Users.nombre AS 'user',
        Topics.id AS 'topicid', Topics.nombre AS 'topic',
        Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
