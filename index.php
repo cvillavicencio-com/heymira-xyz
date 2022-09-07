@@ -40,6 +40,7 @@ if (isset($_GET['f'])){
     switch($f){
 	case 'cc':
 	    if ($log){$contenido=logged();break;}
+	    $estasen='<div>Bienvenido forastero</div>';
 	    $contenido[] = 'Crear cuenta';
 	    $contenido[] = '
 <div class="columns">
@@ -80,6 +81,7 @@ aca va una imagen bonita.
 	    break;
 
 	case 'nc':
+	    $estasen='Sintonizándonos...';
 	    $m=false;
 	    if ($log){$contenido=logged();break;}
 	    $contenido[] = "Creando cuenta";
@@ -112,6 +114,7 @@ aca va una imagen bonita.
 
 
 	case 'is':
+	    $estasen='<div><i>producat lux</i></div>';
 	    if ($log){$contenido=logged();break;}
 	    $contenido[] = 'Iniciar sesión';
 	    $contenido[] = '
@@ -144,6 +147,7 @@ aca va una imagen bonita.
 	    break;
 
 	case 'si':
+	    $estasen='<div><i>profanes</i></div>';
 	    $m=false;
 	    $contenido[] = 'Iniciando sesión';
 	    $nombre=cleanpost('nombre');
@@ -166,6 +170,7 @@ aca va una imagen bonita.
 	    break;
 
 	case 'ss':
+	    $estasen='<div><i>sǝuɐɟoɹd</i></div>';	    
 	    $m=false;
 	    unset($_SESSION['log']);	    
 	    $contenido[] = 'Sesión cerrada';
@@ -185,6 +190,24 @@ aca va una imagen bonita.
 	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false;
 
 
+	    $linkstopics= '';
+	    $total=0;
+	    $lt = "SELECT * FROM Usertopics WHERE userid='$id';";
+	    $ltq= $conn->query($lt);
+	    if ($ltq->num_rows > 0) {
+		while($rowlt = $ltq->fetch_assoc()) {
+		    $total += intval($rowlt['total']);
+		    $usertopics[]= array($rowlt['topicid'], $rowlt['topic'], $rowlt['total']);
+		}
+		$linkstopics.='';
+		foreach ($usertopics as &$ut){
+		    $percent = intval($ut[2]*100/$total);
+		    $linkstopics .= '<a href="?top='.$ut[0].'&u='.$id.'">'.$ut[1].' ('.$ut[2].')</a><progress class="progress is-small" value="'.$percent.'" max="100">20%</progress><br>';
+		}
+	    }
+
+	    
+
 
 	    
 	    $contenido[] = '
@@ -196,7 +219,7 @@ aca va una imagen bonita.
           <div class="media-content">
             <p class="title is-4">'.$perfil[1].@$mail.'</p>
             <p class="subtitle is-6">'.$perfil[4].'</p>
-            <p class="subtitle is-6"><a href="?u='.$id.'">Ver links</a></p>
+            <p class="subtitle is-6"><a href="?u='.$id.'">Ver links ('.$total.')</a></p>
           </div>
         </div>
       </div>
@@ -206,15 +229,22 @@ aca va una imagen bonita.
     </div>
   </div>
 </div>
-
+<div class="card">
+  <div class="card-content">
+'.$linkstopics.'
+  </div>
+</div>
 
 	    ';
+	    $estasen='<div>Es '.$perfil[1].'</div>';
+
 	    break;
 
 	    
 	case 'nl':
 	    if (!$log){$contenido=nologged();break;}
 	    $cats ='';
+	    $estasen='<div>Se preciso</div>';
 	    $contenido[] = 'Nuevo link';
 	    $sqlc = "SELECT id, nombre FROM Categories;";
 	    $resultc = $conn->query($sqlc);
@@ -349,6 +379,7 @@ aca va una imagen bonita.
 	    break;
 
 	case 'al':
+	    $estasen='<div>Tu aporte está siendo gravado</div>';
 	    $m=false;
 	    if (!$log){$contenido=nologged();break;}
 	    $contenido[]='Agregando link';
@@ -390,8 +421,9 @@ aca va una imagen bonita.
 	    
 	    break;
 	default:
+	    $estasen='<div>Buscad y encontrareis, pero no acá</div>';
 	    $contenido[]='Qué raro...';
-	    $contenido[]='no deberías estar leyendo esto. Igual, no hay nada acá :-)';
+	    $contenido[]='no deberías estar leyendo esto. Igual, no hay nada en esta parte :-)';
 	    break;
     }
 } elseif (isset($_GET['l'])){
@@ -461,7 +493,7 @@ aca va una imagen bonita.
     //listado de links
 
     $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC;";
-//        echo $sql;
+    //        echo $sql;
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -513,7 +545,7 @@ aca va una imagen bonita.
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello Bulma!</title>
+    <title>HeyMira!</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">

@@ -126,6 +126,20 @@ FROM Links
        INNER JOIN Categories ON Subcategories.categId = Categories.id
 ;
 
+CREATE VIEW Usertopics AS
+SELECT DISTINCT Topics.id AS 'topicid',
+       		Topics.nombre AS 'topic',
+       		Users.id AS 'userid',
+		(SELECT DISTINCT
+			COUNT(*)
+		FROM Links
+		WHERE Links.autorId=Users.id
+		AND Links.topicId=Topics.id) AS 'total'
+FROM Links
+     INNER JOIN Topics ON Topics.id = Links.topicId
+     INNER JOIN Users ON Links.autorId = Users.id
+;
+
 
 CREATE TABLE Comments(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
