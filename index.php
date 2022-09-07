@@ -356,7 +356,7 @@ aca va una imagen bonita.
 	    $info=cleanpost('info');
 	    $url=cleanpost('url');
 	    $tags=cleanpost('tags');
-	    $tags=explode(',',$tags);
+	    $tags0=explode(',',$tags);
 	    $urlextra=cleanpost('urlextra');
 	    $topicid=intval(cleanpost('topic'));
 
@@ -371,12 +371,14 @@ aca va una imagen bonita.
 		$l = "INSERT INTO Links (info, url, topicId, creado, autorId {$urlextraq[0]}) VALUES ('$info','$url','$topicid', '$ahora', '$id' {$urlextraq[1]});";
 		$resultl=$conn->query($l) or die(mysqli_error($conn));
 		if (!empty($resultl)){
-		    $linkid = $conn->insert_id;
-		    $tq='';
-		    foreach($tags as &$tag){
-			$tag = (substr($tag,0,1) == ' ') ? substr($tag,1) : $tag;
-			$tq = "INSERT INTO Tagslinks (tag,linkid) VALUES ('$tag','$linkid');";
-			$resultag=$conn->query($tq) or die(mysqli_error($conn));
+		    if ($tags){
+			$linkid = $conn->insert_id;
+			$tq='';
+			foreach($tags0 as &$tag){
+			    $tag = (substr($tag,0,1) == ' ') ? substr($tag,1) : $tag;
+			    $tq = "INSERT INTO Tagslinks (tag,linkid) VALUES ('$tag','$linkid');";
+			    $resultag=$conn->query($tq) or die(mysqli_error($conn));
+			}
 		    }
 		    $contenido[] ='Link creado.';
 		} else {
@@ -388,8 +390,8 @@ aca va una imagen bonita.
 	    
 	    break;
 	default:
-	    $contenido[]='aaa?';
-	    $contenido[]='eee?';
+	    $contenido[]='Qué raro...';
+	    $contenido[]='no deberías estar leyendo esto. Igual, no hay nada acá :-)';
 	    break;
     }
 } elseif (isset($_GET['l'])){
@@ -409,13 +411,17 @@ aca va una imagen bonita.
 } else {    
     $u=intval(cleanget('u'));
     $cat=intval(cleanget('cat'));
+    $sub=intval(cleanget('sub'));
+    $top=intval(cleanget('top'));
+
     //    $opcion = $u ? array("usuario="," WHERE usrid='$u' ") : false;
 
     $opciontitulo='';
     $opcionquery='';
     $filtro='';
 
-    if ($u || $cat) {
+    if ( $u || $cat || $sub || $top ) {
+
 	$opcionquery=' WHERE ';
 	if ($u){
 	    $quser="SELECT nombre FROM Users WHERE id = '$u';";
@@ -423,29 +429,39 @@ aca va una imagen bonita.
 	    $filtro.=' del usuario '.$ruser['0'];
 	    $opcionquery .=" usrid='$u' ";
 	}
-	if ($u && $cat){
+	if ( $u && ($cat || $sub || $top) ){
 	    $opcionquery .=' AND ';
 	}
-	if ($cat){
+	if ( $cat ){
 	    $qcat="SELECT nombre FROM Categories WHERE id = '$cat'";
 	    $rcat=$conn->query($qcat)->fetch_row();
-	    $filtro.=' dentro de la categoría '.$rcat['0'];
+	    $filtro.=' en categoría '.$rcat['0'];
 	    $opcionquery .="  catid = '$cat' ";
-	    //	$cat =$rcat;
-	    
+
+	} elseif ( $sub ){
+	    $qsub="SELECT nombre FROM Subcategories WHERE id = '$sub'";
+	    $rsub=$conn->query($qsub)->fetch_row();
+	    $filtro.=' en subcategoría '.$rsub['0'];
+	    $opcionquery .="  subcatid = '$sub' ";
+
+	} elseif ( $top ){
+	    $qtop="SELECT nombre FROM Topics WHERE id = '$top'";
+	    $rtop=$conn->query($qtop)->fetch_row();
+	    $filtro.=' en tópico '.$rtop['0'];
+	    $opcionquery .="  topicid = '$top' ";
 	}
+	
     }
-    
-    
+
     $contenido[]=' ';
+    $estasen='<div class="">Viendo links'.$filtro.'</div>';
     $listalinks='
-<div class="box is-half">Viendo links'.$filtro.'</div>
 <div class="columns">';
     
     //listado de links
 
     $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC;";
-    //    echo $sql;
+//        echo $sql;
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -456,7 +472,10 @@ aca va una imagen bonita.
 <div class="column">
 <span class="link"><a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a></span><br>
 <span class="autor"><span class="icon-arrow-up-circle"></span> <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span> - 
-<span class="categ"><a href="#">'.$row['cat'].'</a> / <a href="#">'.$row['subcat'].'</a> / <a href="#">'.$row['topic'].'</a></span>
+<span class="categ">
+<a href="?cat='.$row['catid'].'">'.substr($row['cat'],4).'</a> /
+<a href="?sub='.$row['subcatid'].'">'.substr($row['subcat'],4).'</a> /
+<a href="?top='.$row['topicid'].'">'.substr($row['topic'],4).'</a></span>
 </div>
 ';
 	    if (is_int($columncount/2)){
@@ -523,6 +542,8 @@ aca va una imagen bonita.
 		      ';
 		  }
 		  ?>
+		  <?php
+		  echo @$estasen;  ?>
 	      </div>
 
 	  </div>
