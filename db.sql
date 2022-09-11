@@ -1,13 +1,15 @@
 -- -- quema todo...
 SET FOREIGN_KEY_CHECKS = 0;
 drop table if exists Comments;
-drop table if exists Taglinks;
+drop view if exists Usertopics;
+drop table if exists Tagslinks;
 drop view if exists  Linksinfo;
 drop table if exists Links;
 drop table if exists States;
 drop table if exists Topics;
 drop table if exists Subcategories;
 drop table if exists Categories;
+drop table if exists Catsets;
 drop view if exists Userinfo;
 drop table if exists Users;
 drop table if exists Usertypes;
@@ -43,10 +45,16 @@ SELECT Users.id, Users.nombre, Users.info, Users.mail, Usertypes.nombre AS 'tipo
 FROM Users RIGHT JOIN Usertypes ON Users.utypeId = Usertypes.id
 ;
 
+CREATE TABLE Catsets(
+       id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+       nombre VARCHAR(50)
+);
+
 CREATE TABLE Categories(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
        nombre   VARCHAR(50) NOT NULL,
-       orden 	INT
+       catsetId INT NOT NULL,
+       FOREIGN KEY (catsetId) REFERENCES Catsets(id)
 );
 
 -- INSERT INTO Categories (nombre) VALUES ('Animales');
@@ -95,7 +103,8 @@ INSERT INTO States (nombre) VALUES ('borrador');
 
 CREATE TABLE Links (
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-       info     VARCHAR(500) NOT NULL,
+       titulo	VARCHAR(300) NOT NULL,
+       info     VARCHAR(1500) NOT NULL,
        url      VARCHAR(200) NOT NULL,
        urlextra VARCHAR(200),
        creado   TIMESTAMP NOT NULL,
@@ -114,7 +123,13 @@ CREATE TABLE Tagslinks(
 );
 
 CREATE VIEW Linksinfo AS
-SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado, Links.stateId as 'stateid'
+SELECT Links.id AS 'id',
+       Links.titulo,
+       Links.info,
+       Links.url,
+       Links.urlextra,
+       Links.creado,
+       Links.stateId as 'stateid',
        Users.id AS 'usrid', Users.nombre AS 'user',
        Topics.id AS 'topicid', Topics.nombre AS 'topic',
        Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',

@@ -328,9 +328,16 @@ aca va una imagen bonita.
 <div class="columns is-centered">
   <div class="column is-half">
     <div class="field">
-      <label class="label">Descripción</label>
+      <label class="label">Título</label>
       <div class="control">
-        <input name="info" class="input" type="text" placeholder="De qué trata este link">
+        <input name="titulo" class="input" type="text" placeholder="De qué trata este link">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Información sobre el link</label>
+      <div class="control">
+        <textarea class="textarea" name="info" placeholder="Por qué compartes este link"></textarea>
       </div>
     </div>
     <div class="field">
@@ -380,6 +387,7 @@ aca va una imagen bonita.
 	    if (!$log){$contenido=nologged();break;}
 	    $contenido[]='Agregando link';
 	    // recibe datos:
+	    $titulo=cleanpost('titulo');
 	    $info=cleanpost('info');
 	    $url=cleanpost('url');
 	    $tags=cleanpost('tags');
@@ -395,7 +403,7 @@ aca va una imagen bonita.
 	    $result= $conn->query($al);
 	    if ($result->num_rows == 0){ // link no existe. bien
 		$ahora = date('Y-m-d H:i:s');
-		$l = "INSERT INTO Links (info, url, topicId, creado, autorId {$urlextraq[0]}) VALUES ('$info','$url','$topicid', '$ahora', '$id' {$urlextraq[1]});";
+		$l = "INSERT INTO Links (titulo, info, url, topicId, creado, autorId {$urlextraq[0]}) VALUES ('$titulo','$info','$url','$topicid', '$ahora', '$id' {$urlextraq[1]});";
 		$resultl=$conn->query($l) or die(mysqli_error($conn));
 		if (!empty($resultl)){
 		    if ($tags){
@@ -420,17 +428,86 @@ aca va una imagen bonita.
 	    $estasen='<div>Buscad y encontrareis, pero no acá</div>';
 	    $contenido[]='Qué raro...';
 	    $contenido[]='no deberías estar leyendo esto. Igual, no hay nada en esta parte :-)';
+	    // y en efecto no hay nada :-)
 	    break;
     }
-} elseif (isset($_GET['l'])){
-
+} elseif (isset($_GET['l'])){   
     // VISTA DE UN SOLO LINK
     // ver link
     $l = cleanget('l');
-    switch($l){
-	default:
-	    echo '';
+    if (is_int(intval($l))){  // ver link
+	echo 'link int';
+
+	$ls="SELECT * FROM Linksinfo WHERE id='$l';";
+	$lq = $conn->query($ls);
+	$ll = $lq->fetch_row();
+	// id info url urlextra creado autorId topicId stateId
+	// 0  1    2   3        4      5       6       7
+
+
+	
+
+	// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
+	// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
+	//Editar Edita
+	$contenido[] = $ll['1'];
+
+	$vistalink='
+<div class="columns">
+  <div class="column">
+    <div class="box"><b><center>Resumen del contenido</center></b><br>'.$ll['2'].' 
+    </div>
+  </div>
+  <div class="column is-one-third">
+    <div class="box">
+	<b>'.$ll['1'].'</b><br>
+	'.$ll['3'].'<hr>Creado por<br>
+	<span class="autor">&nbsp; '.$ll['8'].'</span><br><br>
+
+	    Taxonomia:
+      <br><span class="categ">
+        <a href="?cat='.$ll['13'].'">'.$ll['14'].'</a><br>
+        <a href="?sub='.$ll['11'].'">'.$ll['12'].'</a><br>
+        <a href="?top='.$ll['9'].'">'.$ll['10'].'</a><br>
+      </span><br><br>
+
+            Tags:
+      <br><span class="categ">
+        <a href="?cat='.$ll['12'].'">'.$ll['13'].'</a><br>
+        <a href="?sub='.$ll['10'].'">'.$ll['11'].'</a><br>
+        <a href="?top='.$ll['8'].'">'.$ll['9'].'</a><br>
+      </span><br><br>
+
+
+
+
+    </div>
+  </div>
+
+</div>
+
+</div>';
+
+	$contenido[] = $vistalink;
+	
+
+
+
+
+
+
+
+
+	
+    } else { // usos.
+	echo 'link no int';
+
+	switch($l){
+	    default:
+		echo '';
+	}
     }
+    
 
     
     $contenido[]='aaa';
@@ -442,6 +519,7 @@ aca va una imagen bonita.
     $sub=intval(cleanget('sub'));
     $top=intval(cleanget('top'));
     $pag=intval(cleanget('pag'));
+    $pag = !$pag ? 1 :$pag; 
 
     //    $opcion = $u ? array("usuario="," WHERE usrid='$u' ") : false;
 
@@ -502,12 +580,14 @@ aca va una imagen bonita.
 	while($row = $result->fetch_assoc()) {
 	    $listalinks .= '
 <div class="column">
-<span class="link"><a target="_blank" href="'.$row['url'].'">'.$row['info'].'</a></span><br>
-<span class="autor"><span class="icon-arrow-up-circle"></span> <a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span> - 
+<span class="link"><a href="?l='.$row['id'].'"><span class="icon-bubble"></span></a> <a target="_blank" href="'.$row['url'].'">'.$row['titulo'].'</a></span><br>
+<span class="icon-user"></span>  <span class="autor"><a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span> <br>
+<span class="icon-book-open"></span>
 <span class="categ">
-<a href="?cat='.$row['catid'].'">'.substr($row['cat'],4).'</a> /
-<a href="?sub='.$row['subcatid'].'">'.substr($row['subcat'],4).'</a> /
-<a href="?top='.$row['topicid'].'">'.substr($row['topic'],4).'</a></span>
+<a href="?cat='.$row['catid'].'">'.$row['cat'].'</a> /
+<a href="?sub='.$row['subcatid'].'">'.$row['subcat'].'</a> /
+<a href="?top='.$row['topicid'].'">'.$row['topic'].'</a></span>
+
 </div>
 ';
 	    if (is_int($columncount/2)){
@@ -532,14 +612,14 @@ aca va una imagen bonita.
     }
     $listalinks.='</div>';
 
-    $pagX = "SELECT COUNT(*) FROM Linksinfo $opcionquery ORDER BY creado DESC";
-    $pagq = $conn->query($pagX);
-    $pagr = $pagq->fetch_row();
+    $pags = "SELECT COUNT(*) FROM Linksinfo $opcionquery ORDER BY creado DESC";
+    $pagq = $conn->query($pags);
+    $pagl = $pagq->fetch_row();
 
-    //    echo $pagr[0]; // <-- este es el total de links q existen :-D
+    //    echo $pagl[0]; // <-- este es el total de links q existen :-D
     //paginación
 
-    $totalpags=($pagr[0]/$linksporpag);
+    $totalpags=($pagl[0]/$linksporpag);
     $paginat=array(''.'');
     for ($i=0; $i <= $totalpags; $i++) {
 	$o = $i+1;
