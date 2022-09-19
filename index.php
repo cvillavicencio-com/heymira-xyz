@@ -238,6 +238,38 @@ aca va una imagen bonita.
 
 	    
 	case 'nl':
+	    $formedit='al';
+	    $linkid=cleanget('link');
+	    $actionform='Agregar';
+	    if ($linkid) { // if está editando link q exista previamente.
+		$ls="SELECT * FROM Linksinfo WHERE id='$linkid';";
+		$lq = $conn->query($ls);
+		$ll = $lq->fetch_row();
+		// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
+		// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
+		if (!empty($ll[0])) {
+		    $actionform='Editar';
+		    $formedit='ul';
+		    $formidfield='<input type="hidden" name="idediting" value="'.$linkid.'">';
+		    echo 'editarás '.$ll['1'];
+		    $titulo   = ' value="'.$ll['1'].'" ';
+		    $info     = $ll['2'];
+		    $url      = ' value="'.$ll['3'].'" ';
+		    $urlextra = ' value="'.$ll['4'].'" ';
+		    $topicid  = $ll['9'];
+		    $tags = '';
+		    $ts="SELECT * FROM Tagslinks WHERE linkId='$linkid';";
+		    $tq=$conn->query($ts);
+		    if ($tq->num_rows > 0) {
+			$tags .= ' value="';
+			while($tl = $tq->fetch_assoc()) {
+			    $tags .=$tl['tag'].',';
+			}
+			$tags.='" ';
+		    }
+		}
+
+	    }
 	    if (!$log){$contenido=nologged();break;}
 	    $cats ='';
 	    $estasen='<div>Se preciso</div>';
@@ -279,9 +311,10 @@ aca va una imagen bonita.
 				    } else {
 					$unassig = '';
 				    }				    
+				    $selctd = ($rowt['id'] == @$topicid) ? 'checked' : false;
 
 				    $cats .= '
-	       <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '.$unassig.'> '.$rowt['nombre'].'</label></li>';
+	       <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '. $selctd.' '.$unassig.'> '.$rowt['nombre'].'</label></li>';
 				}
 				$cats .= '</ul></div>';
 			    } else {
@@ -324,37 +357,37 @@ aca va una imagen bonita.
 	    $cats = $combo . $cats;
 	    
 	    $contenido[] = '
-<form action="./?f=al" method="POST">
+<form action="./?f='.$formedit.'" method="POST">'.@$formidfield.'
 <div class="columns is-centered">
   <div class="column is-half">
     <div class="field">
       <label class="label">Título</label>
       <div class="control">
-        <input name="titulo" class="input" type="text" placeholder="De qué trata este link">
+        <input name="titulo" class="input" type="text"'.@$titulo.'placeholder="De qué trata este link">
       </div>
     </div>
 
     <div class="field">
       <label class="label">Información sobre el link</label>
       <div class="control">
-        <textarea class="textarea" name="info" placeholder="Por qué compartes este link"></textarea>
+        <textarea class="textarea" name="info" placeholder="Por qué compartes este link">'.@$info.'</textarea>
       </div>
     </div>
     <div class="field">
       <label class="label">URL</label>
       <div class="control">
-        <input name="url" class="input" type="text" placeholder="Dirección del link">
+        <input name="url" class="input" type="text" placeholder="Dirección del link"'.@$url.'>
       </div>
     </div>
     <div class="field">
       <label class="label">Tema</label>
-	    '.$cats.'
+	'.$cats.'
     </div>
 
     <div class="field">
       <label class="label is-small">Tags (separados por comas)</label>
       <div class="control">
-        <input name="tags" class="input is-small" type="text" placeholder="tags, etiquetas, etc">
+        <input name="tags" class="input is-small" type="text" placeholder="tags, etiquetas, etc" '.@$tags.'>
       </div>
     </div>
 
@@ -363,13 +396,13 @@ aca va una imagen bonita.
         <div class="field">
           <label class="label is-small">URL extra (opcional)</label>
           <div class="control">
-            <input name="urlextra" class="input  is-small" type="text" placeholder="Respaldo o link relacionado al mismo tema">
+            <input name="urlextra" class="input  is-small" type="text"'.@$urlextra.' placeholder="Respaldo o link relacionado al mismo tema">
           </div>
         </div>
       </div>
       <div class="column">
        <div class="control">
-         <button type="submit" class="button is-primary is-large">Agregar link</button>
+         <button type="submit" class="button is-primary is-large">'.$actionform.' link</button>
        </div>
       </div>
     </div>
@@ -378,22 +411,22 @@ aca va una imagen bonita.
 
   </div>
 </div>
-	    ';
+	 ';
 	    break;
 
-	case 'al':
+	case 'al': //agregar link
 	    $estasen='<div>Tu aporte está siendo gravado</div>';
 	    $m=false;
 	    if (!$log){$contenido=nologged();break;}
 	    $contenido[]='Agregando link';
 	    // recibe datos:
-	    $titulo=cleanpost('titulo');
-	    $info=cleanpost('info');
-	    $url=cleanpost('url');
-	    $tags=cleanpost('tags');
-	    $tags0=explode(',',$tags);
-	    $urlextra=cleanpost('urlextra');
-	    $topicid=intval(cleanpost('topic'));
+	    $titulo   = cleanpost('titulo');
+	    $info     = cleanpost('info');
+	    $url      = cleanpost('url');
+	    $tags     = cleanpost('tags');
+	    $tags0    = explode(',',$tags);
+	    $urlextra = cleanpost('urlextra');
+	    $topicid  = intval(cleanpost('topic'));
 
 	    // query opcionales: urlextra
 	    $urlextraq = $urlextra ? array(', urlextra',", '$urlextra'") : array(false,false);
@@ -424,10 +457,67 @@ aca va una imagen bonita.
 	    }
 	    
 	    break;
+
+	case 'ul': // update link
+	    $estasen='<div>Tu aporte está siendo gravado</div>';
+	    $m=false;
+	    if (!$log){$contenido=nologged();break;}
+	    $contenido[]='Editando link';
+	    // recibe datos:
+	    $titulo    = cleanpost('titulo');
+	    $info      = cleanpost('info');
+	    $url       = cleanpost('url');
+	    $tags      = cleanpost('tags');
+	    $tags0     = explode(',',$tags);
+	    $urlextra  = cleanpost('urlextra');
+	    $topicid   = intval(cleanpost('topic'));
+	    $idediting = intval(cleanpost('idediting'));
+
+	    // query opcionales: urlextra
+	    $urlextraq = $urlextra ? ",urlextra='$urlextra'":false;
+
+
+	    /*
+	       UPDATE table_name
+	       SET column1 = value1, column2 = value2, ...
+	       WHERE condition;
+	     */
+
+	    // confirmar si usuario es autor, para poder editar.
+	    $ls="SELECT usrid FROM Linksinfo WHERE id='$idediting';";
+	    $lq = $conn->query($ls);
+	    $ll = $lq->fetch_row();
+	    // id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
+	    // 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
+
+	    if ($ll[0] == $id){
+		$us = "UPDATE Links SET titulo='$titulo', info='$info',url='$url',topicId='$topicid' $urlextraq WHERE id='$idediting';";
+		$uq = $conn->query($us) or die(mysqli_error());
+
+		// DELETE FROM table_name WHERE condition;
+		$ds = "DELETE FROM Tagslinks WHERE linkId='$idediting';";
+		$dq = $conn->query($ds) or die(mysqli_error());
+
+		if ($tags){
+		    $linkid = $conn->insert_id;
+		    $tq='';
+		    foreach($tags0 as &$tag){
+			$tag = (substr($tag,0,1) == ' ') ? substr($tag,1) : $tag;
+			$tq = "INSERT INTO Tagslinks (tag,linkid) VALUES ('$tag','$idediting');";
+			$resultag=$conn->query($tq) or die(mysqli_error($conn));
+		    }
+		}
+
+		$contenido[]='El link ha sido editado exitosamente.';
+	    } else {
+		$contenido[]='No puedes editar este link.';
+	    }
+	    break;
+
 	default:
 	    $estasen='<div>Buscad y encontrareis, pero no acá</div>';
 	    $contenido[]='Qué raro...';
-	    $contenido[]='no deberías estar leyendo esto. Igual, no hay nada en esta parte :-)';
+	    $contenido[]='no deberías estar leyendo esto. Igual, no hay nada en esta parte :-) <!-- y de verdad que no hay nada... -->';
 	    // y en efecto no hay nada :-)
 	    break;
     }
@@ -436,21 +526,17 @@ aca va una imagen bonita.
     // ver link
     $l = cleanget('l');
     if (is_int(intval($l))){  // ver link
-	echo 'link int';
+	//	echo 'link int';
 
 	$ls="SELECT * FROM Linksinfo WHERE id='$l';";
 	$lq = $conn->query($ls);
 	$ll = $lq->fetch_row();
-	// id info url urlextra creado autorId topicId stateId
-	// 0  1    2   3        4      5       6       7
-
-
-	
-
 	// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
 	// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
 	//Editar Edita
 	$contenido[] = $ll['1'];
+
+	$editlink = ($ll['7'] == $id) ? '<a href="?f=nl&link='.$ll['0'].'">Editar</a>' : false;
 
 	$vistalink='
 <div class="columns">
@@ -471,12 +557,12 @@ aca va una imagen bonita.
         <a href="?top='.$ll['9'].'">'.$ll['10'].'</a><br>
       </span><br><br>
 
-            Tags:
+            Tags: [ESTO NO ESTÁ PROGRAMADO AUN :p]
       <br><span class="categ">
         <a href="?cat='.$ll['12'].'">'.$ll['13'].'</a><br>
         <a href="?sub='.$ll['10'].'">'.$ll['11'].'</a><br>
         <a href="?top='.$ll['8'].'">'.$ll['9'].'</a><br>
-      </span><br><br>
+      </span><br>'.$editlink.'<br>
 
 
 
