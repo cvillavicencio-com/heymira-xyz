@@ -49,6 +49,7 @@ CREATE TABLE Catsets(
        id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
        nombre VARCHAR(50)
 );
+-- INSERT INTO Catsets (nombre) VALUES ('Set test');
 
 CREATE TABLE Categories(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -57,8 +58,8 @@ CREATE TABLE Categories(
        FOREIGN KEY (catsetId) REFERENCES Catsets(id)
 );
 
--- INSERT INTO Categories (nombre) VALUES ('Animales');
--- INSERT INTO Categories (nombre) VALUES ('Materia');
+-- INSERT INTO Categories (nombre, catsetId) VALUES ('Animales',1);
+-- INSERT INTO Categories (nombre, catsetId) VALUES ('Materia',1);
 
 CREATE TABLE Subcategories(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -109,9 +110,11 @@ CREATE TABLE Links (
        urlextra VARCHAR(200),
        creado   TIMESTAMP NOT NULL,
        autorId  INT NOT NULL,
-       FOREIGN KEY (autorId) REFERENCES Users(id),     
+       FOREIGN KEY (autorId) REFERENCES Users(id),
        topicId  INT NOT NULL,
        FOREIGN KEY (topicId) REFERENCES Topics(id),
+       catsetId INT NOT NULL,
+       FOREIGN KEY (catsetId) REFERENCES Catsets(id),
        stateId  INT NOT NULL DEFAULT 1,
        FOREIGN KEY (stateId) REFERENCES States(id)
 );
@@ -133,7 +136,8 @@ SELECT Links.id AS 'id',
        Users.id AS 'usrid', Users.nombre AS 'user',
        Topics.id AS 'topicid', Topics.nombre AS 'topic',
        Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
-       Categories.id AS 'catid', Categories.nombre As 'cat'
+       Categories.id AS 'catid', Categories.nombre As 'cat',
+       Links.catsetId AS 'catset'
 FROM Links
        INNER JOIN Users ON Links.autorId = Users.id
        INNER JOIN Topics ON Links.topicId = Topics.id

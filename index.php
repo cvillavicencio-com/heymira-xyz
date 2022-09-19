@@ -245,36 +245,37 @@ aca va una imagen bonita.
 		$ls="SELECT * FROM Linksinfo WHERE id='$linkid';";
 		$lq = $conn->query($ls);
 		$ll = $lq->fetch_row();
-		// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
-		// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
+		// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat catset
+		// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14  15
 		if (!empty($ll[0])) {
 		    $actionform='Editar';
 		    $formedit='ul';
 		    $formidfield='<input type="hidden" name="idediting" value="'.$linkid.'">';
-		    echo 'editarás '.$ll['1'];
 		    $titulo   = ' value="'.$ll['1'].'" ';
 		    $info     = $ll['2'];
 		    $url      = ' value="'.$ll['3'].'" ';
 		    $urlextra = ' value="'.$ll['4'].'" ';
 		    $topicid  = $ll['9'];
+		    $catset   = cleanget('catset') ? intval(cleanget('catset')) : $ll['15'];
 		    $tags = '';
 		    $ts="SELECT * FROM Tagslinks WHERE linkId='$linkid';";
 		    $tq=$conn->query($ts);
 		    if ($tq->num_rows > 0) {
-			$tags .= ' value="';
 			while($tl = $tq->fetch_assoc()) {
-			    $tags .=$tl['tag'].',';
+			    $tags .=$tl['tag'].', ';
 			}
-			$tags.='" ';
+			$tags=' value="'.substr($tags,0,-2).'" ';
 		    }
 		}
 
+	    } else {
+		$catset = cleanget('catset') ? intval(cleanget('catset')) : '1';
 	    }
 	    if (!$log){$contenido=nologged();break;}
 	    $cats ='';
 	    $estasen='<div>Se preciso</div>';
 	    $contenido[] = 'Nuevo link';
-	    $sqlc = "SELECT id, nombre FROM Categories;";
+	    $sqlc = "SELECT id, nombre FROM Categories WHERE catsetId = '$catset';";
 	    $resultc = $conn->query($sqlc);
 
 	    $colcol=0;
@@ -329,13 +330,40 @@ aca va una imagen bonita.
 			$cats .= 'no hay subcats';
 		    }
 		    $cats .= '</div>';
-
 		}
 
 		$cats .= '</div>';
 	    } else {
 		$cats .= 'no hay cats';
 	    }
+
+	    $comboset='
+<div class="field">
+  <p class="control has-icons-left">
+    <span class="select is-small">
+      <select id="catset" name="catset" onchange="cargasetcat();">';
+
+	    $ss='SELECT * FROM Catsets;';
+	    $sq=$conn->query($ss);
+	    if ($sq->num_rows > 0){
+		while ($sl = $sq->fetch_assoc()){
+		    $slectd = ($sl['id'] == @$catset) ? 'selected' : false;
+		    $comboset .= '<option value="'.$sl['id'].'" '.$slectd.'>'.$sl['nombre'] . '</option> - ';		    
+		}
+	    }
+	    $comboset .= '
+      </select>
+    </span>
+    <span class="icon is-small is-left">
+<span class="is-red icon-eyeglass"></span>
+    </span>
+  </p>
+</div>
+	    ';
+
+
+
+	    
 	    $combo='
 <div class="field">
   <p class="control has-icons-left">
@@ -354,7 +382,7 @@ aca va una imagen bonita.
   </p>
 </div>
 	    ';
-	    $cats = $combo . $cats;
+	    $cats = $comboset .$combo . '<div id="cats">'.$cats.'</div>';
 	    
 	    $contenido[] = '
 <form action="./?f='.$formedit.'" method="POST">'.@$formidfield.'
@@ -427,6 +455,7 @@ aca va una imagen bonita.
 	    $tags0    = explode(',',$tags);
 	    $urlextra = cleanpost('urlextra');
 	    $topicid  = intval(cleanpost('topic'));
+	    $catset  = intval(cleanpost('catset'));
 
 	    // query opcionales: urlextra
 	    $urlextraq = $urlextra ? array(', urlextra',", '$urlextra'") : array(false,false);
@@ -436,7 +465,7 @@ aca va una imagen bonita.
 	    $result= $conn->query($al);
 	    if ($result->num_rows == 0){ // link no existe. bien
 		$ahora = date('Y-m-d H:i:s');
-		$l = "INSERT INTO Links (titulo, info, url, topicId, creado, autorId {$urlextraq[0]}) VALUES ('$titulo','$info','$url','$topicid', '$ahora', '$id' {$urlextraq[1]});";
+		$l = "INSERT INTO Links (titulo, info, url, topicId, catsetId, creado, autorId {$urlextraq[0]}) VALUES ('$titulo','$info','$url','$topicid', '$catset','$ahora', '$id' {$urlextraq[1]});";
 		$resultl=$conn->query($l) or die(mysqli_error($conn));
 		if (!empty($resultl)){
 		    if ($tags){
@@ -471,6 +500,7 @@ aca va una imagen bonita.
 	    $tags0     = explode(',',$tags);
 	    $urlextra  = cleanpost('urlextra');
 	    $topicid   = intval(cleanpost('topic'));
+	    $catset   = intval(cleanpost('catset'));
 	    $idediting = intval(cleanpost('idediting'));
 
 	    // query opcionales: urlextra
@@ -491,7 +521,7 @@ aca va una imagen bonita.
 	    // 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
 
 	    if ($ll[0] == $id){
-		$us = "UPDATE Links SET titulo='$titulo', info='$info',url='$url',topicId='$topicid' $urlextraq WHERE id='$idediting';";
+		$us = "UPDATE Links SET titulo='$titulo', info='$info',url='$url',topicId='$topicid',catsetId='$catset' $urlextraq WHERE id='$idediting';";
 		$uq = $conn->query($us) or die(mysqli_error());
 
 		// DELETE FROM table_name WHERE condition;
@@ -536,7 +566,18 @@ aca va una imagen bonita.
 	//Editar Edita
 	$contenido[] = $ll['1'];
 
-	$editlink = ($ll['7'] == $id) ? '<a href="?f=nl&link='.$ll['0'].'">Editar</a>' : false;
+	$editlink = ($ll['7'] == $id) ? '<a href="?f=nl&link='.$ll['0'].'"><button class="button is-warning">Editar</button>
+</a>' : false;
+
+	$ts="SELECT * FROM Tagslinks WHERE linkId='{$ll[0]}';";
+	$tq=$conn->query($ts);
+	if ($tq->num_rows > 0) {
+	    $tags = '·&nbsp;';
+	    while($tl = $tq->fetch_assoc()) {
+		$tags .='<a href="?tag='.$tl['tag'].'">'.$tl['tag'].'</a>&nbsp;·&nbsp;';
+	    }
+	}
+
 
 	$vistalink='
 <div class="columns">
@@ -557,11 +598,8 @@ aca va una imagen bonita.
         <a href="?top='.$ll['9'].'">'.$ll['10'].'</a><br>
       </span><br><br>
 
-            Tags: [ESTO NO ESTÁ PROGRAMADO AUN :p]
-      <br><span class="categ">
-        <a href="?cat='.$ll['12'].'">'.$ll['13'].'</a><br>
-        <a href="?sub='.$ll['10'].'">'.$ll['11'].'</a><br>
-        <a href="?top='.$ll['8'].'">'.$ll['9'].'</a><br>
+            Tags: 
+      <br><span class="tags">'.$tags.'<br>
       </span><br>'.$editlink.'<br>
 
 
@@ -575,15 +613,6 @@ aca va una imagen bonita.
 </div>';
 
 	$contenido[] = $vistalink;
-	
-
-
-
-
-
-
-
-
 	
     } else { // usos.
 	echo 'link no int';
