@@ -572,10 +572,13 @@ aca va una imagen bonita.
 	$ts="SELECT * FROM Tagslinks WHERE linkId='{$ll[0]}';";
 	$tq=$conn->query($ts);
 	if ($tq->num_rows > 0) {
-	    $tags = '·&nbsp;';
+	    $tags = 'Tags:<br><span class="tags">·&nbsp;';
 	    while($tl = $tq->fetch_assoc()) {
 		$tags .='<a href="?tag='.$tl['tag'].'">'.$tl['tag'].'</a>&nbsp;·&nbsp;';
 	    }
+	    $tags .='</span>';
+	} else {
+	    $tags='';
 	}
 
 
@@ -588,19 +591,17 @@ aca va una imagen bonita.
   <div class="column is-one-third">
     <div class="box">
 	<b>'.$ll['1'].'</b><br>
-	'.$ll['3'].'<hr>Creado por<br>
+	'.$ll['3'].' <a href="'.$ll['3'].'"><span class="icon-link"></span></a><hr>Creado por<br>
 	<span class="autor">&nbsp; '.$ll['8'].'</span><br><br>
 
 	    Taxonomia:
       <br><span class="categ">
         <a href="?cat='.$ll['13'].'">'.$ll['14'].'</a><br>
-        <a href="?sub='.$ll['11'].'">'.$ll['12'].'</a><br>
-        <a href="?top='.$ll['9'].'">'.$ll['10'].'</a><br>
+         <span class="icon-arrow-right"></span> <a href="?sub='.$ll['11'].'">'.$ll['12'].'</a><br>
+        <span class="icon-arrow-right"></span><span class="icon-arrow-right"></span> <a href="?top='.$ll['9'].'">'.$ll['10'].'</a><br>
       </span><br><br>
 
-            Tags: 
-      <br><span class="tags">'.$tags.'<br>
-      </span><br>'.$editlink.'<br>
+        '.$tags.'<br>'.$editlink.'<br>
 
 
 
