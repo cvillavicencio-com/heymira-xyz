@@ -31,9 +31,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// menu de categorias acá
-//    PENDIENTE
-// hasta acá
 
 if (isset($_GET['f'])){
     $f = cleanget('f');
@@ -180,19 +177,19 @@ aca va una imagen bonita.
 
 	case 'up':
 	    if (!$log){$contenido=nologged();break;}
-	    $id = isset($_GET['id']) ? intval(cleanget('id')) : $id;
-	    $n = "SELECT * FROM Userinfo WHERE id = '$id';";	    
-	    $perfilq = $conn->query($n);
-	    $perfil = $perfilq->fetch_row();
+	    $idup = isset($_GET['id']) ? intval(cleanget('id')) : $id;
+	    $us = "SELECT * FROM Userinfo WHERE id = '$idup';";	    
+	    $uq = $conn->query($us);
+	    $ul = $uq->fetch_row();
 	    //	    print_r($perfil);
 	    
-	    $contenido[] = 'imagen bonita';
-	    $mail = $perfil[3] ? ' ('.$perfil[3].')' : false;
+	    $contenido[] = '';
+	    $mail = $ul[3] ? ' ('.$ul[3].')' : false;
 
 
 	    $linkstopics= '';
 	    $total=0;
-	    $lt = "SELECT * FROM Usertopics WHERE userid='$id';";
+	    $lt = "SELECT * FROM Usertopics WHERE userid='$idup';";
 	    $ltq= $conn->query($lt);
 	    if ($ltq->num_rows > 0) {
 		while($rowlt = $ltq->fetch_assoc()) {
@@ -206,6 +203,11 @@ aca va una imagen bonita.
 		}
 	    }
 
+	    $editperfil = ($idup == @$id) ? '<p><a href="?f=ep"><button class="button is-warning">Editar perfil</button></a></p>' : false;
+
+	    // $idup.'-'.strlen($ul[1])
+
+	    $avatar = (file_exists('avatars/'.$idup.'-'.strlen($ul[1]))) ? $idup.'-'.strlen($ul[1]) : 'default';
 	    $contenido[] = '
 <div class="card">
   <div class="card-content">
@@ -213,14 +215,15 @@ aca va una imagen bonita.
       <div class="column has-background-grey-lighter  is-one-quarter ">
         <div class="media">
           <div class="media-content">
-            <p class="title is-4">'.$perfil[1].@$mail.'</p>
-            <p class="subtitle is-6">'.$perfil[4].'</p>
-            <p class="subtitle is-6"><a href="?u='.$id.'">Ver links ('.$total.')</a></p>
+            <img src="avatars/'.$avatar.'.png">
+            <p class="title is-4">'.$ul[1].@$mail.'</p>
+            <p class="subtitle is-6">'.$ul[4].'</p>
+            <p class="subtitle is-6"><a href="?u='.$id.'">Ver links ('.$total.')</a></p>'.$editperfil.'
           </div>
         </div>
       </div>
       <div class="column">
-	    '.$perfil[2].'
+	    '.$ul[2].'
       </div>
     </div>
   </div>
@@ -232,10 +235,177 @@ aca va una imagen bonita.
 </div>
 
 	    ';
-	    $estasen='<div>Es '.$perfil[1].'</div>';
+	    $estasen='<div>Es '.$ul[1].'</div>';
 
 	    break;
 
+	case 'ep': // editar perfil
+	    if (!$log){$contenido=nologged();break;}
+
+	    $es="SELECT * FROM Users WHERE id='$id'";
+	    $eq=$conn->query($es);
+	    $el=$eq->fetch_row();
+	    //id nombre clave info mail utypeId
+	    //0  1      2     3    4    5
+
+	    $avatar = (file_exists('avatars/'.$id.'-'.strlen($el[1]))) ? $id.'-'.strlen($ul[1]) : 'default';
+
+	    $form= '
+
+<form action="?f=ap" method="POST" enctype="multipart/form-data"/>
+
+<div class="columns">
+<div class="column is-one-quarter">
+  <label class="label">Avatar</label>
+ <div id="file-with-js"
+             class="file has-name is-small is-centered is-boxed is-link">
+            <label class="file-label">
+                <input class="file-input"
+                       type="file" name="avatar">
+                <span class="file-cta">
+                  <img id="output" src="avatars/'.$avatar.'.png" height="100px" width="100px" />
+
+                    <span class="file-label">
+                        Subir
+                    </span>
+                </span>
+                <span class="file-name">
+                </span>
+            </label>
+        </div>
+    <script>
+        // Select the input element using
+        // document.querySelector
+        var input = document.querySelector(
+          "#file-with-js>.file-label>.file-input"
+        );
+ 
+        // Bind an listener to onChange event of the input
+        input.onchange = function () {
+            if(input.files.length > 0){
+                var fileNameContainer =
+                    document.querySelector(
+                      "#file-with-js>.file-label>.file-name"
+                    );
+                // set the inner text of fileNameContainer
+                // to the name of the file
+                fileNameContainer.textContent =
+                  input.files[0].name;
+                  var image = document.getElementById(\'output\');
+	          image.src = URL.createObjectURL(event.target.files[0]);
+            }
+        }
+    </script>
+</div>
+<div class="column">
+<div class="field">
+  <label class="label">Información</label>
+  <div class="control">
+    <textarea class="textarea" name="info" maxlength="300" placeholder="Trescientos caracteres para describirte.">'.$el['3'].'</textarea>
+  </div>
+</div>
+</div>
+</div>
+
+    <hr>
+
+<div class="columns">
+<div class="column">
+<div class="field">
+  <label class="label">Nueva contraseña</label>
+  <div class="control">
+    <input class="input" name="clave" type="text" placeholder="Dejar en blanco si quieres conservar contraseña actual">
+  </div>
+</div>
+</div>
+<div class="column">
+<div class="field">
+  <label class="label">Confirmar</label>
+  <div class="control">
+    <label class="checkbox">
+      <input name="conf1" value="1" type="checkbox">
+      Quiero cambiar mi contraseña.</label><br>
+    <label class="checkbox">
+      <input name="conf2" value="2" type="checkbox">
+      En serio, quiero cambiar mi contraseña. 
+    </label>
+  </div>
+</div>
+</div>
+</div>
+<div class="field">
+  <div class="control is-centered">
+    <button class="button is-link">Actualizar</button>
+  </div>
+</div>
+</form>
+    ';
+	    $contenido[] = 'Editar Perfil';
+	    $contenido[] = $form;
+	    break;
+
+	case 'ap':
+	    if (!$log){$contenido=nologged();break;}
+	    $contenido[] = 'Actualizando datos';
+	    $res='';
+	    // actualiza datos
+	    // cambiaron los datos?
+	    $es="SELECT * FROM Users WHERE id='$id'";
+	    $eq=$conn->query($es);
+	    $el=$eq->fetch_row();
+	    //id nombre clave info mail utypeId
+	    //0  1      2     3    4    5
+
+	    $info = substr(cleanpost('info'),0,300);
+	    if ($info != $el['3']){ // info cambió ;-)
+		$is="UPDATE Users SET info='$info' WHERE id='$id';";
+		$iq=$conn->query($is) or die(mysqli_error());		
+		$res .= 'Información actualizada<br>';
+
+	    }
+	    if (cleanpost('conf1') == 1 && cleanpost('conf2') == 2){
+		$clave = sha1(cleanpost('clave'));
+		$cs="UPDATE Users SET clave='$clave' WHERE id='$id';";
+		$cq=$conn->query($cs) or die(mysqli_error());
+		$res .= 'Clave actualizada<br>';		
+	    }
+	    
+	    // sube imagen (si hay) name=avatar -- código de: https://www.jose-aguilar.com/blog/upload-de-imagenes-con-php/
+	    //Recogemos el archivo enviado por el formulario
+	    $archivo = $_FILES['avatar']['name'];
+	    //Si el archivo contiene algo y es diferente de vacio
+	    if (isset($archivo) && $archivo != "") {
+		//Obtenemos algunos datos necesarios sobre el archivo
+		$tipo = $_FILES['avatar']['type'];
+		$tamano = $_FILES['avatar']['size'];
+		$temp = $_FILES['avatar']['tmp_name'];
+		//Se comprueba si el archivo a cargar es correcto observando su extensión y tamaño
+		if (!((strpos($tipo, "gif") || strpos($tipo, "jpeg") || strpos($tipo, "jpg") || strpos($tipo, "png")) && ($tamano < 200000))) {
+		    $res .= 'Avatar no fue actualizado. Se permiten archivos .gif, .jpg, .png. y de 200 kb como máximo.<br>';
+		}
+		else {
+		    //Si la imagen es correcta en tamaño y tipo
+		    //Se intenta subir al servidor
+		    $avatarfile=explode('.',$archivo);
+		    $archivok=$id.'-'.strlen($el[1]).'.png';
+		    if (move_uploaded_file($temp, 'avatars/'.substr($temp,4))) {
+			//Cambiamos los permisos del archivo a 777 para poder modificarlo posteriormente
+			chmod('avatars/'.substr($temp,4), 0777);
+			exec('convert -resize 100 avatars/'.substr($temp,4).' avatars/'.$archivok.'; rm avatars/'.substr($temp,4));
+			//Mostramos el mensaje de que se ha subido co éxito
+			$res .= 'Avatar modificado exitosamente.<br>';
+			//Mostramos la imagen subida
+			//			echo '<p><img src="avatars/'.$archivok.'"></p>';
+		    }
+		    else {
+			//Si no se ha podido subir la imagen, mostramos un mensaje de error
+			$res .= '<div><b>Ocurrió algún error al subir el fichero. No pudo guardarse.</b></div>';
+		    }
+		}
+	    }
+	    
+	    // notifica
+	    $contenido[] = $res;
 	    
 	case 'nl':
 	    $formedit='al';
@@ -315,7 +485,7 @@ aca va una imagen bonita.
 				    $selctd = ($rowt['id'] == @$topicid) ? 'checked' : false;
 
 				    $cats .= '
-	       <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '. $selctd.' '.$unassig.'> '.$rowt['nombre'].'</label></li>';
+	    <li><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '. $selctd.' '.$unassig.'> '.$rowt['nombre'].'</label></li>';
 				}
 				$cats .= '</ul></div>';
 			    } else {
@@ -338,10 +508,10 @@ aca va una imagen bonita.
 	    }
 
 	    $comboset='
-<div class="field">
-  <p class="control has-icons-left">
-    <span class="select is-small">
-      <select id="catset" name="catset" onchange="cargasetcat();">';
+	    <div class="field">
+	    <p class="control has-icons-left">
+	    <span class="select is-small">
+	    <select id="catset" name="catset" onchange="cargasetcat();">';
 
 	    $ss='SELECT * FROM Catsets;';
 	    $sq=$conn->query($ss);
@@ -352,52 +522,52 @@ aca va una imagen bonita.
 		}
 	    }
 	    $comboset .= '
-      </select>
-    </span>
-    <span class="icon is-small is-left">
-<span class="is-red icon-eyeglass"></span>
-    </span>
-  </p>
-</div>
+	    </select>
+	    </span>
+	    <span class="icon is-small is-left">
+	    <span class="is-red icon-eyeglass"></span>
+	    </span>
+	    </p>
+	    </div>
 	    ';
 
 
 
 	    
 	    $combo='
-<div class="field">
-  <p class="control has-icons-left">
-    <span class="select is-small">
-      <select onchange="jump();" id="combocats">';
+	    <div class="field">
+	    <p class="control has-icons-left">
+	    <span class="select is-small">
+	    <select onchange="jump();" id="combocats">';
 	    foreach ($combocat as &$comcat){
 		$combo .= '<option value="'.$comcat[0].'">'.$comcat[1] . '</option> - ';
 	    }
 
 	    $combo .= '
-      </select>
-    </span>
-    <span class="icon is-small is-left">
-<span class="is-red icon-eyeglass"></span>
-    </span>
-  </p>
-</div>
+	    </select>
+	    </span>
+	    <span class="icon is-small is-left">
+	    <span class="is-red icon-eyeglass"></span>
+	    </span>
+	    </p>
+	    </div>
 	    ';
 	    $cats = $comboset .$combo . '<div id="cats">'.$cats.'</div>';
 	    
 	    $contenido[] = '
-<form action="./?f='.$formedit.'" method="POST">'.@$formidfield.'
-<div class="columns is-centered">
-  <div class="column is-half">
-    <div class="field">
-      <label class="label">Título</label>
-      <div class="control">
-        <input name="titulo" class="input" type="text"'.@$titulo.'placeholder="De qué trata este link">
-      </div>
-    </div>
+	    <form action="?f='.$formedit.'" method="POST">'.@$formidfield.'
+	    <div class="columns is-centered">
+	    <div class="column is-half">
+	    <div class="field">
+	    <label class="label">Título</label>
+	    <div class="control">
+            <input name="titulo" class="input" type="text"'.@$titulo.'placeholder="De qué trata este link">
+	    </div>
+	    </div>
 
-    <div class="field">
-      <label class="label">Información sobre el link</label>
-      <div class="control">
+	    <div class="field">
+	    <label class="label">Información sobre el link</label>
+	<div class="control">
         <textarea class="textarea" name="info" placeholder="Por qué compartes este link">'.@$info.'</textarea>
       </div>
     </div>
@@ -566,7 +736,7 @@ aca va una imagen bonita.
 	//Editar Edita
 	$contenido[] = $ll['1'];
 
-	$editlink = ($ll['7'] == $id) ? '<a href="?f=nl&link='.$ll['0'].'"><button class="button is-warning">Editar</button>
+	$editlink = ($ll['7'] == @$id) ? '<a href="?f=nl&link='.$ll['0'].'"><button class="button is-warning">Editar</button>
 </a>' : false;
 
 	$ts="SELECT * FROM Tagslinks WHERE linkId='{$ll[0]}';";
