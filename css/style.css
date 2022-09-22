@@ -1,0 +1,19 @@
+span.autor{
+    font-size:small;
+}
+span.categ{
+    font-size:x-small;
+}
+span.categ a{
+    color:red;
+}
+
+span.tags {
+    font-size: small;    
+}
+span.tags a{
+    color:darkblue;
+}
+span.tags a:hover{
+    text-decoration:underline;
+}
