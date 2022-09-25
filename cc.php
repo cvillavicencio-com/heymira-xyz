@@ -4,9 +4,10 @@
 	    $contenido[] = '
 <div class="columns">
   <div class="column">
-aca va una imagen bonita.
+<center>
+<img src="css/cc.png">
+</center>
   </div>
-
   <div class="column">
 <form action="./?f=nc" method="post">
 <div class="field">
@@ -35,6 +36,8 @@ aca va una imagen bonita.
 
 </form>
 </div>
+
+
 </div>
 	    ';
 ?>
