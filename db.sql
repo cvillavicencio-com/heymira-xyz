@@ -163,9 +163,11 @@ FROM Links
 CREATE TABLE Comments(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
        texto	VARCHAR(250) NOT NULL,
-       estado	BOOLEAN DEFAULT TRUE,
+       estado	INT NOT NULL DEFAULT 1,
+       FOREIGN KEY (estado) REFERENCES States(id),
        autorId	INT NOT NULL,
        FOREIGN KEY (autorId) REFERENCES Users(id),
        linkId   INT NOT NULL,
-       FOREIGN KEY (linkId) REFERENCES Links(id)
+       FOREIGN KEY (linkId) REFERENCES Links(id),
+       fecha    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

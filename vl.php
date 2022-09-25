@@ -28,18 +28,93 @@
 	    $tags='';
 	}
 
+    // VER COMENTARIOS
+    if ($log){
+        $vs = "SELECT *, Users.nombre AS 'user' FROM Comments INNER JOIN Users ON Comments.autorId = Users.id WHERE linkId='$l';";
+        $vq = $conn->query($vs);
+
+        $coms ='
+<div class="columns is-centered">
+  <div class="column ">
+';
+	if ($vq->num_rows > 0) {
+	    $coms .= '
+    <label class="label is-centered">Comentarios </label>
+';
+	    while($vl = $vq->fetch_assoc()) {
+            $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['autorId']))) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
+
+            $coms .= '
+    <div class="card">
+      <div class="card-content">
+        <div class="columns">
+          <div class="column is-one-third">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img src="avatars/'.$avatar.'.png" alt="'.$vl['user'].'">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-6">'.$vl['user'].'<br>
+                <span class="autor">'.$vl['fecha'].'</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <div class="content">'.$vl['texto'].'</div>
+          </div>
+        </div>
+      </div>
+    </div>
+';
+        }
+
+    } else {
+        $coms .= '<p>No hay comentarios</p>';
+    }
+        $coms .= '
+  </div>
+';
+    // FORM NUEVO COMENTARIO
+        $formulario = '
+  <div class="column is-one-third">
+    <div class="box">
+      <form action="?f=dc" method="POST">
+      <div class="field">
+        <label class="label">Dejar un comentario</label>
+      <div class="control">
+        <textarea name="com" class="textarea" placeholder="Textarea"></textarea>
+      </div>
+    </div>
+    <input type="hidden" name="lid" value="'.$l.'">
+    <div class="field">
+      <div class="control">
+        <button class="button is-link">Submit</button>
+     </div><br>
+   </div>
+ </div>
+</div>';
+
+        // VISTA DE COMENTARIOS
+
+        $comentarios = '<hr>'.$coms . $formulario;
+    } else {
+        $comentarios = '<div class="box">Inicia sesión o crea una cuenta para dejar un comentario</div>';
+    }
 
 	$vistalink='
 <div class="columns">
   <div class="column">
-    <div class="box"><b><center>Resumen del contenido</center></b><br>'.$ll['2'].' 
+    <div class="box">
+      <b><center>Resumen del contenido</center></b><br>'.$ll['2'].' 
     </div>
   </div>
   <div class="column is-one-third">
     <div class="box">
-	<b>'.$ll['1'].'</b><br>
-	'.$ll['3'].' <a href="'.$ll['3'].'"><span class="icon-link"></span></a><hr>Creado por<br>
-	<span class="autor">&nbsp; '.$ll['8'].'</span><br><br>
+	  <b>'.$ll['1'].'</b><br>
+	  '.$ll['3'].' <a href="'.$ll['3'].'"><span class="icon-link"></span></a><hr>Creado por<br>
+	  <span class="autor">&nbsp; '.$ll['8'].'</span><br><br>
 
 	    Taxonomia:
       <br><span class="categ">
@@ -49,18 +124,12 @@
       </span><br><br>
 
         '.$tags.'<br>'.$editlink.'<br>
-
-
-
-
     </div>
   </div>
-
 </div>
+';
 
-</div>';
-
-	$contenido[] = $vistalink;
+	$contenido[] = $vistalink .$comentarios;
 	
     } else { // usos.
 	echo 'link no int';

@@ -27,6 +27,8 @@
 
 	case 'ul': $m=false; if (!$log){$contenido=nologged();break;} include('ul.php'); break;
 
+    case 'dc': $m=false; if (!$log){$contenido=nologged();break;} include('dc.php'); break;
+
 	default:
 	    $estasen='<div>Buscad y encontrareis, pero no acá</div>';
 	    $contenido[]='Qué raro...';
