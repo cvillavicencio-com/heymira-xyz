@@ -65,7 +65,7 @@ if (isset($_GET['f'])){
 		  if ($m){
 		      foreach($menu as &$boton){
 			  echo '
-	      <a href="?f='.$boton[1].'" class="button">
+	      <a href="?f='.$boton[1].'" class="button is-small is-rounded">
 		  <strong>'.$boton[0].'</strong>
               </a>';
 		      }
