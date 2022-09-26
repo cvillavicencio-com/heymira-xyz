@@ -135,13 +135,24 @@ function logged(){
 }
 
 function cleanpost($a){
-    $r = isset($_POST[$a]) ? htmlspecialchars($_POST[$a]) : false;
+    if (is_array($_POST[$a])){
+	$r=array();
+	foreach ($_POST[$a] as &$b){
+	    $r[] = htmlspecialchars($b);
+	}
+    } else {
+	$r = isset($_POST[$a]) ? htmlspecialchars($_POST[$a]) : false;
+    }
     return $r;
 }
+
 function cleanget($a){    
     $r = isset($_GET[$a]) ? htmlspecialchars($_GET[$a]) : false;
     return $r;
-    
+}
+
+function imgredirect($src,$loc,$txt){
+    return '<img src="'.$src.'" onload="window.location.replace(\''.$loc.'\');"><p>'.$txt.'</p>';
 }
 // fin funciones
 

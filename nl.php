@@ -14,7 +14,7 @@
 		    $formedit='ul';
 		    $formidfield='<input type="hidden" name="idediting" value="'.$linkid.'">';
 		    $titulo   = ' value="'.$ll['1'].'" ';
-		    $info     = $ll['2'];
+		    $info     = str_replace('<br />','',$ll['2']);
 		    $url      = ' value="'.$ll['3'].'" ';
 		    $urlextra = ' value="'.$ll['4'].'" ';
 		    $topicid  = $ll['9'];
