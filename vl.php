@@ -1,8 +1,8 @@
 <?php
-    // VISTA DE UN SOLO LINK
-    // ver link
-    $l = cleanget('l');
-    if (is_int(intval($l))){  // ver link
+// VISTA DE UN SOLO LINK
+// ver link
+$l = cleanget('l');
+if (is_int(intval($l))){  // ver link
 	//	echo 'link int';
 
 	$ls="SELECT * FROM Linksinfo WHERE id='$l';";
@@ -21,7 +21,7 @@
 	if ($tq->num_rows > 0) {
 	    $tags = 'Tags:<br><span class="tags">·&nbsp;';
 	    while($tl = $tq->fetch_assoc()) {
-		$tags .='<a href="?tag='.$tl['tag'].'">'.$tl['tag'].'</a>&nbsp;·&nbsp;';
+            $tags .='<a href="?tag='.$tl['tag'].'">'.$tl['tag'].'</a>&nbsp;·&nbsp;';
 	    }
 	    $tags .='</span>';
 	} else {
@@ -30,22 +30,29 @@
 
     // VER COMENTARIOS
     if ($log){
-        $vs = "SELECT *, Users.nombre AS 'user' FROM Comments INNER JOIN Users ON Comments.autorId = Users.id WHERE linkId='$l';";
+
+        $noautor = ($ll[7] != $id) ? 'AND estado = 1':false;
+        $vs = "SELECT Comments.id AS 'comid', texto, estado, autorId,linkId, fecha , Users.nombre AS 'user', Users.id as 'usrid' FROM Comments INNER JOIN Users ON Comments.autorId = Users.id WHERE linkId='$l' $noautor;";
         $vq = $conn->query($vs);
 
         $coms ='
 <div class="columns is-centered">
   <div class="column ">
 ';
-	if ($vq->num_rows > 0) {
-	    $coms .= '
+        if ($vq->num_rows > 0) { // sí hay comentarios :-D
+            $marca = ($ll[7] == $id) ? true:false;
+
+            $coms .= $marca ? '<form action="?f=ec" method="POST">' : '';
+            $coms .= '
     <label class="label is-centered">Comentarios </label>
 ';
-	    while($vl = $vq->fetch_assoc()) {
-            $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['autorId']))) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
+            while($vl = $vq->fetch_assoc()) {
+                $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['autorId']))) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
+                $visible = (!$noautor && $vl['estado'] != '1') ? ' comnv':false;
+                $marcar = $marca ? '<br><span class="tags"><input name="marca[]" value="'.$vl['comid'].'" type="checkbox">&nbsp;Marcar</span>' : '';
 
-            $coms .= '
-    <div class="card">
+                $coms .= '
+    <div class="card '.$visible.'">
       <div class="card-content">
         <div class="columns">
           <div class="column is-one-third">
@@ -56,8 +63,8 @@
                 </figure>
               </div>
               <div class="media-content">
-                <p class="title is-6">'.$vl['user'].'<br>
-                <span class="autor">'.$vl['fecha'].'</span></p>
+                <p class="title is-6"><a href="?f=up&id='.$vl['usrid'].'">'.$vl['user'].'</a><br>
+                <span class="autor">'.$vl['fecha'].'</span>'.$marcar.'</p>
               </div>
             </div>
           </div>
@@ -68,15 +75,22 @@
       </div>
     </div>
 ';
-        }
 
-    } else {
-        $coms .= '<p>No hay comentarios</p>';
-    }
+            }
+            $coms .= $marca ? ' <br> <input type="hidden" value="'.$ll[0].'" name="link"><div class="field">
+      <div class="control">
+        <button class="button is-warning">Cambiar estado (visible/invisible) de mensajes marcados</button>
+     </div><br>
+   </div>
+</form>' : '';
+
+        } else {
+            $coms .= '<p>No hay comentarios</p>';
+        }
         $coms .= '
   </div>
 ';
-    // FORM NUEVO COMENTARIO
+        // FORM NUEVO COMENTARIO
         $formulario = '
   <div class="column is-one-third">
     <div class="box">
@@ -90,7 +104,7 @@
     <input type="hidden" name="lid" value="'.$l.'">
     <div class="field">
       <div class="control">
-        <button class="button is-link">Submit</button>
+        <button class="button is-link">Enviar</button>
      </div><br>
    </div>
  </div>
@@ -131,18 +145,18 @@
 
 	$contenido[] = $vistalink .$comentarios;
 	
-    } else { // usos.
+} else { // usos.
 	echo 'link no int';
 
 	switch($l){
-	    default:
+    default:
 		echo '';
 	}
-    }
+}
     
 
     
-    $contenido[]='aaa';
-    $contenido[]='eee';
+$contenido[]='aaa';
+$contenido[]='eee';
 
 ?>
