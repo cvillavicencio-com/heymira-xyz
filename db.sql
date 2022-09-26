@@ -30,7 +30,7 @@ CREATE TABLE Users(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
        nombre   VARCHAR(100) NOT NULL,
        clave    VARCHAR(200) NOT NULL,
-       info     VARCHAR(300),
+       info     VARCHAR(1000),
        mail     VARCHAR(300),
        utypeId  INT NOT NULL DEFAULT 1,
        FOREIGN KEY (utypeId) REFERENCES Usertypes(id)
