@@ -17,3 +17,9 @@ span.tags a{
 span.tags a:hover{
     text-decoration:underline;
 }
+
+div.comnv{
+    background-image: url('comnv.png') !important;
+
+
+}
