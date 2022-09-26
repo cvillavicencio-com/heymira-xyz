@@ -2,7 +2,7 @@
 	    $contenido[]='Agregando link';
 	    // recibe datos:
 	    $titulo   = cleanpost('titulo');
-	    $info     = cleanpost('info');
+        $info     = nl2br(cleanpost('info'));
 	    $url      = cleanpost('url');
 	    $tags     = cleanpost('tags');
 	    $tags0    = explode(',',$tags);
