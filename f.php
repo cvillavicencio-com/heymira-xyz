@@ -8,14 +8,9 @@
 
 	case 'si': $m=false; include('si.php'); break;
 
-	case 'cs':
-	    $m=false;
-	    unset($_SESSION['log']);
-	    $contenido[] = 'Sesión cerrada';
-	    $contenido[] = '<p onload="window.location.replace(\'/.\');">te has desconectado.</p>';
-	    break;
+	case 'cs': $m=false; if (!$log){$contenido=nologged();break;} include('cs.php'); break;
 
-	case 'up': if (!$log){$contenido=nologged();break;} include('up.php'); break;
+    case 'up': if (!$log){$contenido=nologged();break;} include('up.php'); break;
 
 	case 'ep': if (!$log){$contenido=nologged();break;} include('ep.php'); break;
 

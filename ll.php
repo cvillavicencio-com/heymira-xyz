@@ -54,11 +54,11 @@ $sql = "SELECT * FROM Linksinfo $opcionquery ORDER BY creado DESC $limit;";
 
 if($tag) {
     $sql = "SELECT * FROM Tagslinks INNER JOIN Linksinfo ON Tagslinks.linkId = Linksinfo.id WHERE Tagslinks.tag = '$tag';";
+    $filtro =" con el tag <i>$tag</i>";
 }
 
 
-$contenido[]=' ';
-$estasen='<div class="">Viendo links'.$filtro.'</div>';
+$contenido[]='Viendo links'.$filtro.'';
     
 //listado de links
 
