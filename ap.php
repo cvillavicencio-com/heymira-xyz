@@ -57,5 +57,5 @@ if (isset($archivo) && $archivo != "") {
 }
 	    
 // notifica
-$contenido[] = $res;
+$contenido[] = $res.imgredirect('logo.png','?f=up','Información actualizada exitosamente.');
 ?>

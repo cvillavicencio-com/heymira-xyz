@@ -5,7 +5,7 @@
 	    $ul = $uq->fetch_row();
 	    //	    print_r($perfil);
 	    
-	    $contenido[] = '';
+	    $contenido[] = 'Perfil de '.$ul['1'];
 //	    $mail = $ul[3] ? ' ('.$ul[3].')' : false;
 
 

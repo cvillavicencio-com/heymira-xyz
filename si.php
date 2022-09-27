@@ -9,12 +9,13 @@
 	    if ($result->num_rows != 0) {	    
 		if ($laclave[0] == $clave){
 		    $_SESSION["log"]=$laclave[1];
-		    $contenido[]='<img src="logo.png" onload="window.location.replace(\'/heymira\');"><p>sesión iniciada correctamente</p>';
+            $contenido[]=imgredirect('logo.png','.','Sesión iniciada correctamente');
 		} else {
+            $contenido[]=imgredirect('logo.png','?f=is','Contraseña equivocada');
 	    	    $contenido[]='contraseña incorrecta';
 		}		
 	    } else {
-		$contenido[]='nombre de usuario no encontrado';
+            $contenido[]=imgredirect('logo.png','?f=is','Usuario no se encuentra registrado');
 	    }
 
 ?>
