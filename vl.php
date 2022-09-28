@@ -47,7 +47,7 @@ if (is_int(intval($l))){  // ver link
     <label class="label is-centered">Comentarios </label>
 ';
             while($vl = $vq->fetch_assoc()) {
-                $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['autorId']))) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
+                $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['user']).'.png')) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
                 $visible = (!$noautor && $vl['estado'] != '1') ? ' comnv':false;
                 $marcar = $marca ? '<br><span class="tags"><input name="marca[]" value="'.$vl['comid'].'" type="checkbox">&nbsp;Marcar</span>' : '';
 
@@ -127,7 +127,10 @@ if (is_int(intval($l))){  // ver link
   <div class="column is-one-third">
     <div class="box">
 	  <b>'.$ll['1'].'</b><br>
-	  '.$ll['3'].' <a href="'.$ll['3'].'"><span class="icon-link"></span></a><hr>Creado por<br>
+<a href="'.$ll['3'].'">	  '.$ll['3'].' <span class="icon-link"></span></a><br><br>
+	  <span class="autor">URL extra: <a href="'.$ll['4'].'" target="_blank">'.$ll['4'].'</a></span><br><br>
+
+<hr>Creado por<br>
 	  <span class="autor">&nbsp; '.$ll['8'].'</span><br><br>
 
 	    Taxonomia:

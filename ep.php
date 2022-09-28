@@ -5,7 +5,9 @@
 	    //id nombre clave info mail utypeId
 	    //0  1      2     3    4    5
 
-	    $avatar = (file_exists('avatars/'.$id.'-'.strlen($el[1]))) ? $id.'-'.strlen($ul[1]) : 'default';
+
+$avatar = (file_exists('avatars/'.$id.'-'.strlen($el[1]).'.png')) ? $id.'-'.strlen($el[1]) : 'default';
+
 
 	    $form= '
 
