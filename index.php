@@ -26,10 +26,6 @@ if (isset($_SESSION['log'])){
 
 
 include('dbconfig.php');
-$conn = new mysqli($srv, $usr, $pwd, $dbn);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 
 if (isset($_GET['f'])){
