@@ -1,7 +1,16 @@
 <?php
+$contenido[] = 'Cierre de sesión';
+if (isset($_SESSION['log'])) {
+    unset($_SESSION['log']);
+    $txto = 'La sesión temporal se ha cerrado exitosamente.';
+} elseif ($_COOKIE['log']) {
+    setcookie("log", 'null', time()); //
 
-unset($_SESSION['log']);
-$contenido[] = 'Sesión cerrada';
-$contenido[] = imgredirect('logo.png','.','Sesión cerrada exitosamente');
+    $txto = 'La sesión permanente se ha cerrado exitosamente.';
+} else {
+    $txto = 'No hay sesión para cerrar.';
+}
+
+$contenido[] = imgredirect('logo.png','.',$txto);
 
 ?>

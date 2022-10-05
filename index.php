@@ -8,13 +8,13 @@ session_start();
 $iniciodelsitio = floatval(microtime());
 $m=true;
 
-if (isset($_SESSION['log'])){
-    $id=$_SESSION['log'];
+if (isset($_SESSION['log']) || isset($_COOKIE['log'])){
+    $id= isset($_SESSION['log']) ? $_SESSION['log']: $_COOKIE['log'];
     $log = true;
     $menu = array(
         array('<span class="icon-energy"></span> Nuevo link','nl'),
         array('<span class="icon-user"></span> Perfil','up'),
-	array('<span class="icon-logout"></span> Cerrar sesión','cs')
+	array('<span class="icon-logout"></span> Cerrar sesión','cs'),
     );
 } else {
     $log = false;
@@ -136,9 +136,11 @@ function cleanpost($a){
 	foreach ($_POST[$a] as &$b){
 	    $r[] = htmlspecialchars($b);
 	}
-    } else {
+    } elseif (!is_array($_POST[$a])) {
 	$r = isset($_POST[$a]) ? htmlspecialchars($_POST[$a]) : false;
-    }
+    } else {
+	$r = false;
+    }    
     return $r;
 }
 
