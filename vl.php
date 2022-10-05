@@ -3,30 +3,32 @@
 // ver link
 $l = cleanget('l');
 if (is_int(intval($l))){  // ver link
-	//	echo 'link int';
+    //	echo 'link int';
 
-	$ls="SELECT * FROM Linksinfo WHERE id='$l';";
-	$lq = $conn->query($ls);
-	$ll = $lq->fetch_row();
-	// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
-	// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
-	//Editar Edita
-	$contenido[] = $ll['1'];
+    $ls="SELECT * FROM Linksinfo WHERE id='$l';";
 
-	$editlink = ($ll['7'] == @$id) ? '<a href="?f=nl&link='.$ll['0'].'"><button class="button is-warning">Editar</button>
+    $lq = $conn->query($ls);
+    $ll = $lq->fetch_row()
+    ;
+    // id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat
+    // 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
+    //Editar Edita
+    $contenido[] = $ll['1'];
+
+    $editlink = ($ll['7'] == @$id) ? '<a href="?f=nl&link='.$ll['0'].'"><button class="button is-warning">Editar</button>
 </a>' : false;
 
-	$ts="SELECT * FROM Tagslinks WHERE linkId='{$ll[0]}';";
-	$tq=$conn->query($ts);
-	if ($tq->num_rows > 0) {
-	    $tags = 'Tags:<br><span class="tags">·&nbsp;';
-	    while($tl = $tq->fetch_assoc()) {
+    $ts="SELECT * FROM Tagslinks WHERE linkId='{$ll[0]}';";
+    $tq=$conn->query($ts);
+    if ($tq->num_rows > 0) {
+	$tags = 'Tags:<br><span class="tags">·&nbsp;';
+	while($tl = $tq->fetch_assoc()) {
             $tags .='<a href="?tag='.$tl['tag'].'">'.$tl['tag'].'</a>&nbsp;·&nbsp;';
-	    }
-	    $tags .='</span>';
-	} else {
-	    $tags='';
 	}
+	$tags .='</span>';
+    } else {
+	$tags='';
+    }
 
     // VER COMENTARIOS
     if ($log){
@@ -38,14 +40,14 @@ if (is_int(intval($l))){  // ver link
         $coms ='
 <div class="columns is-centered">
   <div class="column ">
-';
+	';
         if ($vq->num_rows > 0) { // sí hay comentarios :-D
             $marca = ($ll[7] == $id) ? true:false;
 
             $coms .= $marca ? '<form action="?f=ec" method="POST">' : '';
             $coms .= '
     <label class="label is-centered">Comentarios </label>
-';
+	    ';
             while($vl = $vq->fetch_assoc()) {
                 $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['user']).'.png')) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
                 $visible = (!$noautor && $vl['estado'] != '1') ? ' comnv':false;
@@ -74,7 +76,7 @@ if (is_int(intval($l))){  // ver link
         </div>
       </div>
     </div>
-';
+	    ';
 
             }
             $coms .= $marca ? ' <br> <input type="hidden" value="'.$ll[0].'" name="link"><div class="field">
@@ -89,7 +91,7 @@ if (is_int(intval($l))){  // ver link
         }
         $coms .= '
   </div>
-';
+	';
         // FORM NUEVO COMENTARIO
         $formulario = '
   <div class="column is-one-third">
@@ -117,7 +119,7 @@ if (is_int(intval($l))){  // ver link
         $comentarios = '<div class="box">Inicia sesión o crea una cuenta para dejar un comentario</div>';
     }
 
-	$vistalink='
+    $vistalink='
 <div class="columns">
   <div class="column">
     <div class="box">
@@ -144,21 +146,21 @@ if (is_int(intval($l))){  // ver link
     </div>
   </div>
 </div>
-';
+	';
 
-	$contenido[] = $vistalink .$comentarios;
-	
+    $contenido[] = $vistalink .$comentarios;
+    
 } else { // usos.
-	echo 'link no int';
+    echo 'link no int';
 
-	switch($l){
-    default:
-		echo '';
-	}
+    switch($l){
+	default:
+	    echo '';
+    }
 }
-    
 
-    
+
+
 $contenido[]='aaa';
 $contenido[]='eee';
 
