@@ -17,13 +17,13 @@ if ($result->num_rows != 0) {
             $_SESSION["log"]=$laclave[1];
         }
 
-        $contenido[]=imgredirect('logo.png','.','Sesión iniciada correctamente');
+        $contenido[]=imgredirect('css/ojo.gif','.','Sesión iniciada correctamente');
     } else {
-        $contenido[]=imgredirect('logo.png','?f=is','Contraseña equivocada');
+        $contenido[]=imgredirect('css/ojo.gif','?f=is','Contraseña equivocada');
         $contenido[]='contraseña incorrecta';
     }
 } else {
-    $contenido[]=imgredirect('logo.png','?f=is','Usuario no se encuentra registrado');
+    $contenido[]=imgredirect('css/ojo.gif','?f=is','Usuario no se encuentra registrado');
 }
 
 ?>

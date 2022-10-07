@@ -11,6 +11,6 @@ if (isset($_SESSION['log'])) {
     $txto = 'No hay sesión para cerrar.';
 }
 
-$contenido[] = imgredirect('logo.png','.',$txto);
+$contenido[] = imgredirect('css/ojo.gif','.',$txto);
 
 ?>
