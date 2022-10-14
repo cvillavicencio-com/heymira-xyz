@@ -46,7 +46,7 @@
 		    }
 		}
 
-		$contenido[]=imgredirect('logo.png','?l='.$idediting,'El link ha sido editado exitosamente.');
+		$contenido[]=imgredirect('css/ojo.gif','?l='.$idediting,'El link ha sido editado exitosamente.');
 	    } else {
 		$contenido[]='No puedes editar este link.';
 	    }

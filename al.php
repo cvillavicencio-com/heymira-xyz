@@ -38,7 +38,7 @@
 			    $resultag=$conn->query($tq) or die(mysqli_error($conn));
 			}
 		    }
-		    $contenido[] =imgredirect('logo.png','?l='.($idmax+1),'Link guardado exitosamente.');
+		    $contenido[] =imgredirect('css/ojo.gif','?l='.($idmax+1),'Link guardado exitosamente.');
 		} else {
 		    $contenido[] = 'error guardando link';
 		}

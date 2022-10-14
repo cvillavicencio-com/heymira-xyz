@@ -30,11 +30,16 @@ if ($linkid) { // if está editando link q exista previamente.
         }
     }
 } else {
-    $catset = cleanget('catset') ? intval(cleanget('catset')) : '1';
+    $csS = "SELECT setfav FROM Users WHERE id='$id';";
+    $csQ = $conn->query($csS);
+    $csL = $csQ->fetch_row();
+    $catset = cleanget('catset') ? intval(cleanget('catset')) : $csL[0];
 }
 $cats ='';
 
 $contenido[] = 'Nuevo link';
+
+// inicio categorias
 $sqlc = "SELECT id, nombre FROM Categories WHERE catsetId = '$catset';";
 $resultc = $conn->query($sqlc);
 
@@ -102,7 +107,7 @@ if ($resultc->num_rows > 0) {
 $comboset='
 <div class="columns">
 	    <div class="column">
-        <label class="label is-small">Set</label>
+        <label class="label is-small">Set de categorías</label>
 	    <p class="control has-icons-left">
 	    <span class="select is-small">
 	    <select id="catset" name="catset" onchange="cargasetcat();">';
@@ -131,7 +136,7 @@ $comboset .= '
 
 $combo='
 	    <div class="column">
-      <label class="label is-small">Categoría</label>
+      <label class="label is-small">ir directo a categoría</label>
 	    <p class="control has-icons-left">
 	    <span class="select is-small">
 	    <select  onchange="jump();" id="combocats">';
@@ -152,44 +157,9 @@ $combo .= '
 $buscarapida ='
 
 <script>
-function buscarap(){
-  var br      = document.getElementById(\'br\');
-
-  let cscats = document.getElementsByClassName(\'cscat\');
-  for (let cscat of cscats) {
-    cscat.style.display=\'none\';
-  }
-
-  for (let cscat of cscats) {
-    let scats = cscat.getElementsByClassName(\'scat\')
-    for (let scat of scats) {
-      scat.style.display=\'none\';
-    }
-
-    for (let scat of scats) {
-      let tops = scat.getElementsByClassName(\'top\');
-      for (let top of tops) {
-        top.style.display=\'none\';
-      }
-
-      for (let top of tops) {
-        var tt = top.innerHTML.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        var bb = br.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        if (tt.includes(bb)) {
-          top.style.display=\'block\';
-          scat.style.display=\'block\';
-          cscat.style.display=\'block\';
-
-        } else {
-          top.style.display=\'none\';
-        }
-      }
-    }
-  }
-}
 
 </script>
-<div class="field"><label>Búsqueda rápida</label><input onkeyup="buscarap()" style="width:100%" id="br"></div>';
+<div class="field"><label class="label is-small">Búsqueda rápida</label><input class="input is-small" onkeyup="buscarap()" style="width:100%" id="br"></div>';
 $cats = $comboset . $combo . $buscarapida. '<div id="cats">'.$cats.'</div>';
 
 $contenido[] = '
@@ -208,18 +178,18 @@ $contenido[] = '
 
     <div class="field">
       <label class="label">URL</label>
-      <input name="url" class="input" type="text" placeholder="Dirección del link"'.@$url.' required>
+      <input name="url" class="input" type="text" onblur="checkURL(this)" placeholder="Dirección del link"'.@$url.' required>
     </div>
     <div class="field">
       <label class="label is-small">URL extra (opcional)</label>
-      <input name="urlextra" class="input  is-small" type="text"'.@$urlextra.' placeholder="Respaldo o link relacionado al mismo tema">
+      <input name="urlextra" class="input  is-small" onblur="checkURL(this)" type="text"'.@$urlextra.' placeholder="Respaldo o link relacionado al mismo tema">
     </div>
   </div>
 
 
   <div class="column">
       <div class="field">
-      <label class="label">Tema</label>
+      <label class="label">Categorización</label>
       '.$cats.'
     </div>
     <div class="field">
