@@ -6,15 +6,30 @@ $res='';
 $es="SELECT * FROM Users WHERE id='$id'";
 $eq=$conn->query($es);
 $el=$eq->fetch_row();
-//id nombre clave info mail utypeId
-//0  1      2     3    4    5
+//id nombre clave info mail tema setfav utypeId
+//0  1      2     3    4    5    6
 
 $info = nl2br(substr(cleanpost('info'),0,1000));
 if ($info != $el['3']){ // info cambió ;-)
     $is="UPDATE Users SET info='$info' WHERE id='$id';";
     $iq=$conn->query($is) or die(mysqli_error());		
-    $res .= 'Información actualizada<br>';
+    $res .= 'Información de perfil actualizada<br>';
 }
+
+$tema = @cleanpost('tema');
+if ($tema != $el['5']){
+    $is="UPDATE Users SET tema='$tema' WHERE id='$id';";
+    $iq=$conn->query($is) or die(mysqli_error());		
+    $res .= 'Tema actualizado<br>';    
+}
+
+$setfav = @cleanpost('setfav');
+if ($tema != $el['5']){
+    $is="UPDATE Users SET setfav='$setfav' WHERE id='$id';";
+    $iq=$conn->query($is) or die(mysqli_error());		
+    $res .= 'Set de categorías por defecto actualizada<br>';    
+}
+
 
 if (@cleanpost('conf1') == 1 && @cleanpost('conf2') == 2){
     $clave = sha1(cleanpost('clave'));
@@ -22,6 +37,7 @@ if (@cleanpost('conf1') == 1 && @cleanpost('conf2') == 2){
     $cq=$conn->query($cs) or die(mysqli_error());
     $res .= 'Clave actualizada<br>';		
 }
+
 	    
 // sube imagen (si hay) name=avatar -- código de: https://www.jose-aguilar.com/blog/upload-de-imagenes-con-php/
 //Recogemos el archivo enviado por el formulario

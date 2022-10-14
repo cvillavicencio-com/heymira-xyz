@@ -1,15 +1,70 @@
 <?php
-	    $es="SELECT * FROM Users WHERE id='$id'";
-	    $eq=$conn->query($es);
-	    $el=$eq->fetch_row();
-	    //id nombre clave info mail utypeId
-	    //0  1      2     3    4    5
+$es="SELECT * FROM Users WHERE id='$id'";
+$eq=$conn->query($es);
+$el=$eq->fetch_row();
+//id nombre clave token info mail tema setfav utypeId
+//0  1      2     3     4    5    6    7      +++
 
 
 $avatar = (file_exists('avatars/'.$id.'-'.strlen($el[1]).'.png')) ? $id.'-'.strlen($el[1]) : 'default';
 
+$setcats = '';
+$scS = "SELECT id, nombre FROM Catsets;";
+$scQ = $conn->query($scS);
 
-	    $form= '
+if ($scQ->num_rows > 0) {
+    while($scL = $scQ->fetch_assoc()) {
+	$sel = $scL['id'] == intval($el[7]) ? ' selected':false;
+        $setcats .= '<option value="'.$scL['id'].'" '.$sel.'>'.$scL['nombre'].'</option>';
+    }
+}
+
+$sel ='';
+$apariec ='';
+$temas = array('del futuro','normalFome()','oscuro');
+for ($i = 0; $i <= 2; $i++){
+    $sel = $i == intval($el[6]) ? ' selected':false;
+    $apariec .= '<option value="'.$i.'"'.$sel.'>'.$temas[$i].'</option>';
+}
+
+$prefs= '
+<b>Preferencias</b><br>
+<div class="columns">
+<div class="column">
+<p>Apariencia</p>
+<div class="control">
+  <div class="select">
+    <select name="tema">
+'.$apariec.'
+    </select>
+  </div>
+</div>
+</div>
+<div class="column">
+<p>Set de categorías por defecto</p>
+<div class="control">
+  <div class="select">
+    <select name="setfav">
+'.$setcats.'
+    </select>
+  </div>
+</div>
+</div>
+<div class="column">
+<p>Visibilidad de la cuenta</p>
+<div class="control">
+  <div class="select">
+    <select>
+      <option>Pública</option>
+    </select>
+  </div>
+</div>
+</div>
+</div>
+
+';
+
+$form= '
 
 <form action="?f=ap" method="POST" enctype="multipart/form-data"/>
 
@@ -60,14 +115,18 @@ $avatar = (file_exists('avatars/'.$id.'-'.strlen($el[1]).'.png')) ? $id.'-'.strl
 <div class="field">
   <label class="label">Información</label>
   <div class="control">
-    <textarea class="textarea" name="info" maxlength="300" placeholder="Trescientos caracteres para describirte.">'.$el['3'].'</textarea>
+    <textarea class="textarea" name="info" maxlength="300" placeholder="Trescientos caracteres para describirte.">'.$el['4'].'</textarea>
   </div>
 </div>
 </div>
 </div>
 
-    <hr>
 
+    <hr>
+    '.$prefs.'
+
+
+<hr>
 <div class="columns">
 <div class="column">
 <div class="field">
@@ -99,6 +158,6 @@ $avatar = (file_exists('avatars/'.$id.'-'.strlen($el[1]).'.png')) ? $id.'-'.strl
 </div>
 </form>
     ';
-	    $contenido[] = 'Editar Perfil';
-	    $contenido[] = $form;
+$contenido[] = 'Editar Perfil';
+$contenido[] = $form;
 ?>

@@ -3,27 +3,63 @@ $idup = isset($_GET['id']) ? intval(cleanget('id')) : $id;
 $us = "SELECT * FROM Userinfo WHERE id = '$idup';";	    
 $uq = $conn->query($us);
 $ul = $uq->fetch_row();
-//	    print_r($perfil);
-	    
+
+
 $contenido[] = 'Perfil de '.$ul['1'];
-//	    $mail = $ul[3] ? ' ('.$ul[3].')' : false;
+
+
+$optags = '<img src="css/constru.png">';
+
+
+
 
 
 $linkstopics= '';
 $total=0;
 $lt = "SELECT * FROM Usertopics WHERE userid='$idup';";
 $ltq= $conn->query($lt);
+$linkstopics .= '<div class="columns">';
+$linkstopics .= '<div class="column is-one-half">'.$optags.'</div>';
+$linkstopics .= '<div class="column is-one-half"><b>Participación</b><br>';
 if ($ltq->num_rows > 0) {
     while($rowlt = $ltq->fetch_assoc()) {
         $total += intval($rowlt['total']);
         $usertopics[]= array($rowlt['topicid'], $rowlt['topic'], $rowlt['total']);
     }
-    $linkstopics.='';
+
+
+    $columncount=1;
     foreach ($usertopics as &$ut){
         $percent = intval($ut[2]*100/$total);
+	$getinfoS = "
+SELECT DISTINCT Topics.id AS 'idtop', 
+       Topics.nombre AS 'ntop', 
+       Subcategories.id AS 'idsub',
+       Subcategories.nombre AS 'nsub',
+       Categories.id AS 'idcat',
+       Categories.nombre AS 'ncat',
+       Catsets.nombre AS 'nset'
+FROM Topics 
+INNER JOIN Subcategories ON Topics.subcatId = Subcategories.id
+INNER JOIN Categories ON Subcategories.categId = Categories.id
+INNER JOIN Catsets ON Categories.catsetId = Catsets.id
+
+WHERE Topics.id = '{$ut[0]}'; ";
+
+	$getinfoQ = $conn->query($getinfoS);
+	$getinfoL = $getinfoQ->fetch_row();
+	$linkstopics .= '<b>'.$getinfoL[6].'</b> / '; 
+	$linkstopics .= '<a href="?cat='.$getinfoL[4].'&u='.$id.'">'.$getinfoL[5].'</a> / ';
+        $linkstopics .= '<a href="?sub='.$getinfoL[2].'&u='.$id.'">'.$getinfoL[3].'</a> / ';
         $linkstopics .= '<a href="?top='.$ut[0].'&u='.$id.'">'.$ut[1].' ('.$ut[2].')</a><progress class="progress is-small" value="'.$percent.'" max="100">20%</progress><br>';
+
+
+	$columncount++;
+
     }
 }
+$linkstopics .= '</div>';
+$linkstopics .= '</div>';
 
 $editperfil = ($idup == @$id) ? '<p><a href="?f=ep"><button class="button is-warning">Editar perfil</button></a></p>' : false;
 
@@ -31,31 +67,32 @@ $editperfil = ($idup == @$id) ? '<p><a href="?f=ep"><button class="button is-war
 
 $avatar = (file_exists('avatars/'.$idup.'-'.strlen($ul[1]).'.png')) ? $idup.'-'.strlen($ul[1]) : 'default';
 $contenido[] = '
-<div class="card">
-  <div class="card-content">
-    <div class="columns">
-      <div class="column has-background-grey-lighter  is-one-quarter ">
+	<div class="card">
+	<div class="card-content">
+	<div class="columns">
+	<div class="column has-background-grey-lighter  is-one-quarter ">
         <div class="media">
-          <div class="media-content">
-            <img src="avatars/'.$avatar.'.png">
-            <p class="title is-4">'.$ul[1].@$mail.'</p>
-            <p class="subtitle is-6">'.$ul[4].'</p>
-            <p class="subtitle is-6"><a href="?u='.$id.'">Ver links ('.$total.')</a></p>'.$editperfil.'
-          </div>
+        <div class="media-content">
+        <img src="avatars/'.$avatar.'.png">
+        <p class="title is-4">'.$ul[1].@$mail.'</p>
+        <p class="subtitle is-6">'.$ul[4].'</p>
+        <p class="subtitle is-6"><a href="?u='.$id.'">Ver links ('.$total.')</a></p>'.$editperfil.'
         </div>
-      </div>
-      <div class="column">
-	    '.$ul[2].'
-      </div>
-    </div>
-  </div>
-</div>
-<div class="card">
-  <div class="card-content">
-	    '.$linkstopics.'
-  </div>
-</div>
+        </div>
+	</div>
+	<div class="column">
+	'.$ul[2].'
+	</div>
+	</div>
+	</div>
+	</div>
+<br>
+	<div class="card">
+	<div class="card-content">
+	'.$linkstopics.'
+	</div>
+	</div>
 
-	    ';
+	';
 
 ?>
