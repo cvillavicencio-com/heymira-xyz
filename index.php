@@ -6,16 +6,41 @@ error_reporting(E_ALL);
 // logged in?
 session_start();
 $iniciodelsitio = floatval(microtime());
-$m=true;
+include('dbconfig.php');
+$tema=1;
+$m = true;
 
 if (isset($_SESSION['log']) || isset($_COOKIE['log'])){
-    $id= isset($_SESSION['log']) ? $_SESSION['log']: $_COOKIE['log'];
+    $tokenIn = isset($_SESSION['log']) ? $_SESSION['log']: $_COOKIE['log'];
+    // consigue id desde db
+    $tokenS = "SELECT id, setfav, tema FROM Users WHERE token = '$tokenIn';";
+    $tokenQ = $conn->query($tokenS) or die(mysqli_error());
+    $tokenL = $tokenQ->fetch_row();
+
+    if (!empty($tokenL)){
+    $id = $tokenL[0];
+    $setfav = $tokenL[1];
+    $tema = $tokenL[2];
+    
+
+    //    if (!$id){echo '- sistema caído ;-)'; exit();}
+
+    
     $log = true;
     $menu = array(
         array('<span class="icon-energy"></span> Nuevo link','nl'),
         array('<span class="icon-user"></span> Perfil','up'),
-	array('<span class="icon-logout"></span> Cerrar sesión','cs'),
+        array('<span class="icon-magnifier"></span> Buscar','bu'),
+        array('<span class="icon-logout"></span>','cs'),
     );
+    } else {
+        $log = false;
+    $menu = array(
+        array('<span class="icon-login"></span> Iniciar sesión','is'),
+        array('<span class="icon-key"></span> Crear cuenta','cc'),
+    );
+
+    }
 } else {
     $log = false;
     $menu = array(
@@ -25,7 +50,6 @@ if (isset($_SESSION['log']) || isset($_COOKIE['log'])){
 }
 
 
-include('dbconfig.php');
 
 
 if (isset($_GET['f'])){
@@ -39,99 +63,104 @@ if (isset($_GET['f'])){
 ?>
 
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HeyMira!</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico"> 
-    <script type="text/javascript" src="js/script.js" defer></script>
-  </head>
-  <body>
-      <nav class="has-background-primary navbar"  role="navigation" aria-label="main navigation">
-	  <div class="navbar-brand">
-	      <a class="navbar-item" href="http://localhost/heymira">
-		  <img src="logo.gif" width="112" height="28">
-	      </a>
-	      <div class="buttons">
-		  <?php
-		  if ($m){
-		      foreach($menu as &$boton){
-			  echo '
+<html class="cbody-<?php echo $tema; ?>">
+    <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>HeyMira!</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/themes.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">    
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+
+    </head>
+    <body >
+	<nav class="has-background-primary navbar"  role="navigation" aria-label="main navigation">
+	    <div class="navbar-brand">
+		<a class="navbar-item" href=".">
+		    <img src="logo.gif" width="112" height="28">
+		</a>
+		<div class="buttons">
+		    <?php
+		    if ($m){
+			foreach($menu as &$boton){
+			    echo '
 	      <a href="?f='.$boton[1].'" class="button is-small is-rounded">
 		  <strong>'.$boton[0].'</strong>
               </a>';
-		      }
-		  } else {
-		      echo'<a href="." class="button">
+			}
+		    } else {
+			echo'<a href="." class="button">
 		  <strong>Volver al inicio</strong>
               </a>
-		      ';
-		  }
-		  ?>
-		  <?php
-		  //echo @$estasen;  ?>
-	      </div>
+			';
+		    }
+		    ?>
+		    <?php
+		    //echo @$estasen;  ?>
+		</div>
 
-	  </div>
-	  
+	    </div>
+	    
 
-      </nav>
-      
-      <section class="section ">
-	  <div class="container ">
-	<h1 class="title">
-	    <?php
-	    echo $contenido[0];
-	    ?>
-	</h1>
+	</nav>
+	
+	<section class="section">
+	    <div class="container ccont">
+		<h1 class="title">
+		    <a name="title"></a>
+		    <?php
+		    echo $contenido[0];
+		    ?>
+		</h1>
 
-	    <?php
-	    echo $contenido[1];
-	    ?>
+		<?php
+		echo $contenido[1];
+		?>
 
-    </div>
-      </section>
+	    </div>
+	</section>
 
-      <footer class="footer">
-  <div class="content has-text-centered">
-    <p>
-	<strong>Heymira</strong>.
-	<a href="https://github.com/cvillavicencio-com/heymira-xyz" target="_blank"><span class="icon-social-github"></span></a>.
-	is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.<br>
-	<?php
+	<footer>
 
-	$findelsitio = floatval(microtime());
-	$tiempodesitio = $findelsitio-$iniciodelsitio;
-	echo 'Tiempo de carga: '.$tiempodesitio;
-	?>
-    </p>
-  </div>
-      </footer>
-  </body>
+
+		<p>
+		    <strong>Heymira</strong> es <a href="info" target="_blank">software libre</a>.<br>
+
+		    <?php
+
+		    $findelsitio = floatval(microtime());
+		    $tiempodesitio = $findelsitio - $iniciodelsitio;
+		    echo 'Tiempo de carga: ' . $tiempodesitio;
+		    ?>
+		</p>
+
+	</footer><br>
+    </body>
+    <script type="text/javascript" src="js/script.js" async></script>
+
 </html>
 
 
 
-<hr>
+
 
 
 
 
 <?php
 
-function nologged(){
+function nologged() {
     return array('error','no estás conectado');
 }
-function logged(){
+function logged() {
     return array('error','debes estar desconectado');
 }
 
-function cleanpost($a){
-    if (is_array($_POST[$a])){
+function cleanpost($a) {
+    if (is_array($_POST[$a])) {
 	$r=array();
 	foreach ($_POST[$a] as &$b){
 	    $r[] = htmlspecialchars($b);
@@ -149,8 +178,9 @@ function cleanget($a){
     return $r;
 }
 
-function imgredirect($src,$loc,$txt){
-    return '<img src="'.$src.'" onload="window.location.replace(\''.$loc.'\');"><p>'.$txt.'</p>';
+function imgredirect($src,$loc,$txt,$delay=FALSE){
+    
+    return '<img src="'.$src.'" onload="setTimeout((window.location.replace(\''.$loc.'\')),5000);"><p>'.$txt.'</p>';
 }
 // fin funciones
 
