@@ -1,3 +1,12 @@
+html {
+    scroll-behavior: smooth;
+    height:100%
+}
+
+body {
+    position: absolute;
+    width: 100%;
+}
 span.autor{
     font-size:small;
 }
@@ -20,6 +29,54 @@ span.tags a:hover{
 
 div.comnv{
     background-image: url('comnv.png') !important;
+}
+
+@keyframes fadeon {
+    from {opacity:0;}
+    to {opacity:1;}
+}
+
+.cscat {
+    opacity:0;
+    animation-name: fadeon;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
 
 
+.ccont {
+    background-color:rgba(255,255,255,0.8);
+    padding:25px;
+}
+
+.clink {
+    background-color:rgba(255,255,255,0.8);
+    padding:5px;
+}
+
+.linkbtn{
+    bottom: 0px;
+    text-align:right !important;
+    margin-top: -60px;
+}
+
+.linkbtnn{
+    background-color:#00d1b2;
+    display:inline-block;
+    padding: 2px;
+    border-radius: 10em;
+    font-size:20px;
+    padding: 15px;
+
+}
+
+footer{
+    background-color:rgba(255,255,255,0.8) !important;
+    border-radius: 10em;
+    max-width:30%;
+    text-align:center;
+    padding:10px;
+
+    margin:auto;
+    
 }

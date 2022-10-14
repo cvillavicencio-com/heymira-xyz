@@ -1,0 +1,27 @@
+.cbody-0 {
+    /* tema: del futuro */
+    background-image: url('dreamscape2.png');
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.cbody-1{
+    /* tema: normalFome() */
+    background-repeat: no-repeat;
+    background-size:  cover;
+    background-color: #F0f9c8;
+
+}
+
+
+
+.cbody-2 {
+    /* tema: oscuro */
+    background-image: url('subhumanoid.jpg') ;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
