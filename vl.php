@@ -51,7 +51,7 @@ if (is_int(intval($l))){  // ver link
             while($vl = $vq->fetch_assoc()) {
                 $avatar = (file_exists('avatars/'.$vl['autorId'].'-'.strlen($vl['user']).'.png')) ? $vl['autorId'].'-'.strlen($vl['user']) : 'default';
                 $visible = (!$noautor && $vl['estado'] != '1') ? ' comnv':false;
-                $marcar = $marca ? '<br><span class="tags"><input name="marca[]" value="'.$vl['comid'].'" type="checkbox">&nbsp;Marcar</span>' : '';
+                $marcar = $marca ? '<span class="tags"><input name="marca[]" value="'.$vl['comid'].'" type="checkbox">&nbsp;Marcar mensaje</span>' : '';
 
                 $coms .= '
     <div class="card '.$visible.'">
@@ -66,25 +66,48 @@ if (is_int(intval($l))){  // ver link
               </div>
               <div class="media-content">
                 <p class="title is-6"><a href="?f=up&id='.$vl['usrid'].'">'.$vl['user'].'</a><br>
-                <span class="autor">'.$vl['fecha'].'</span>'.$marcar.'</p>
+                <span class="autor">'.$vl['fecha'].'</span></p>
               </div>
             </div>
           </div>
           <div class="column">
             <div class="content">'.$vl['texto'].'</div>
           </div>
+	    '.$marcar.'
         </div>
       </div>
     </div>
+<br>
 	    ';
 
             }
             $coms .= $marca ? ' <br> <input type="hidden" value="'.$ll[0].'" name="link"><div class="field">
       <div class="control">
-        <button class="button is-warning">Cambiar estado (visible/invisible) de mensajes marcados</button>
+        <button class="button is-warning">Cambiar estado (visible/invisible)<br>de mensajes marcados</button>
      </div><br>
    </div>
-</form>' : '';
+</form>
+
+
+<div class="is-hidden-tablet linkbtn" style="right:10px; bottom: 20px; position: fixed !important;">
+
+ <div class="linkbtnn">
+  <a href="."><span class="icon-list"></span></a>
+
+ </div>&nbsp;
+
+ <div class="linkbtnn">
+  <a href="#comms"><span class="icon-bubble"></span></a>
+ </div>&nbsp;
+
+ <div class="linkbtnn">
+  <a href="#title"><span class="icon-arrow-up"></span></a>
+ </div>
+</div>
+
+
+
+	    ' : '';
 
         } else {
             $coms .= '<p>No hay comentarios</p>';
@@ -98,7 +121,7 @@ if (is_int(intval($l))){  // ver link
     <div class="box">
       <form action="?f=dc" method="POST">
       <div class="field">
-        <label class="label">Dejar un comentario</label>
+        <label class="label">Dejar un comentario</label><a name="comms"></a>
       <div class="control">
         <textarea name="com" class="textarea" placeholder="Textarea"></textarea>
       </div>

@@ -15,7 +15,9 @@
 		$c = "INSERT INTO Users (nombre,clave $qmail) VALUES ('$nombre','$clave' $qmail);";
 		$resultm=$conn->query($c);
 		if (!empty($result)){
-		    $contenido[] ='Cuenta creada.';
+		    $contenido[] =imgredirect('css/ojo.gif','?f=is','Cuenta creada, bienvenido.');
+
+
 		} else {
 		    $contenido[] = 'error';
 		}
