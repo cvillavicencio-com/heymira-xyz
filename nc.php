@@ -71,8 +71,7 @@ if ($registrable){ // código ok
 		$invitaciones = array();
 		// se generan nuevos códigos de invitación para usuario nuevo
 		for ($i = 1 ; $i <= $invitacionesporusuario ; $i++){
-		    $letras = array('a', 'b', 'd', 'e', 'f', 'g', 'h', 'j', 'm', 'n', 'q', 'r', 't', 'y', 'A', 'B', 'D', 'E', 'F', 'G', 'H', 'J', 'M', 'N', 'Q', 'R', 'T', 'Y');
-		    $ncode = $letras[rand(0,(count($letras)-1))]. substr(microtime(),-5) . $letras[rand(0,(count($letras)-1))] . rand (1111,9999) . $letras[substr(microtime(),-1,1)].rand(111,999);  // creación de código de inv.
+		    include('creainv.php');
 		    $invitaciones[] = "INSERT INTO Refers (code, ownerId) VALUES ('$ncode','$nu') ;"; // creación de query que crea nueva invitación
 		}
 		// ejecución de querys :D
