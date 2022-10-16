@@ -8,7 +8,22 @@ $ul = $uq->fetch_row();
 $contenido[] = 'Perfil de '.$ul['1'];
 
 
-$optags = '<img src="css/constru.png">';
+$optags = '<img src="css/constru.png"><br>';
+
+$iS = "SELECT * FROM Refers WHERE ownerId = '$id' AND userId = '' IS NULL;";
+$iQ = $conn->query($iS);
+if ($iQ->num_rows > 0) {
+    $optags .= '<hr><b>Invitaciones disponibles</b>';
+
+    while($iL = $iQ->fetch_assoc()) {
+	$optags .= '<br>- <a href="https://heymira.xyz/inv='.$iL['code'].'">https://heymira.xyz/inv='.$iL['code'].'</a>';
+        
+    }
+} 
+
+
+
+
 
 $linkstopics= '';
 $total=0;
