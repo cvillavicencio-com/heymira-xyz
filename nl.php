@@ -2,14 +2,16 @@
 
 $formedit='al';
 $linkid=cleanget('link');
-$actionform='Agregar';
+$actionform='Agregar nuevo';
+$error=false;
+$ls="SELECT * FROM Linksinfo WHERE id='$linkid';";
+$lq = $conn->query($ls);
+$ll = $lq->fetch_row();
+// id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat catset
+// 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14  15
+
 if ($linkid) { // if está editando link q exista previamente.
-    $ls="SELECT * FROM Linksinfo WHERE id='$linkid';";
-    $lq = $conn->query($ls);
-    $ll = $lq->fetch_row();
-    // id titulo info url urlextra creado stateid usrid user topicid topic subcatid subcat catid cat catset
-    // 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14  15
-    if (!empty($ll[0])) {
+    if (!empty($ll[0]) && $ll[7] == $id) {
         $actionform='Editar';
         $formedit='ul';
         $formidfield='<input type="hidden" name="idediting" value="'.$linkid.'">';
@@ -28,6 +30,9 @@ if ($linkid) { // if está editando link q exista previamente.
             }
             $tags=' value="'.substr($tags,0,-2).'" ';
         }
+    } else {
+	$contenido = array('Error',imgredirect('css/ojo.gif','.','No puedes editar este link.'));
+	$error = true;
     }
 } else {
     $csS = "SELECT setfav FROM Users WHERE id='$id';";
@@ -37,9 +42,10 @@ if ($linkid) { // if está editando link q exista previamente.
 }
 $cats ='';
 
-$contenido[] = 'Nuevo link';
+$contenido[] = $actionform.' link';
 
 // inicio categorias
+if (!$error){
 $sqlc = "SELECT id, nombre FROM Categories WHERE catsetId = '$catset';";
 $resultc = $conn->query($sqlc);
 
@@ -206,4 +212,5 @@ $contenido[] = '
 
        ';
 
+}
 ?>

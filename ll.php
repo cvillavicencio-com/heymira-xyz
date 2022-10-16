@@ -14,7 +14,7 @@ $opcionquery='';
 $filtro='';
 
 $ppag ='';
-$linksporpag=5;
+$linksporpag=12;
 $limit = $pag ? "LIMIT $linksporpag OFFSET ".($linksporpag * ($pag-1)) : 'LIMIT '.$linksporpag;
 
 if ( $u || $cat || $sub || $top ) {
@@ -72,19 +72,58 @@ if($tag) {
 }
 
 
+// paginacion
+$pags = explode('DESC',$sql);
+$pags = $pags[0].'DESC';
+$pags = (substr($pags,0,23) == 'SELECT * FROM Tagslinks') ? substr($pags,0,-4) : $pags;
+
+$pagq = $conn->query($pags);
+$pagt = $pagq->num_rows;
+
+$totalpags=($pagt / $linksporpag);
+$paginat=array(''.'');
+for ($i=0; $i <= $totalpags; $i++) {
+	$o = $i+1;
+	$current = ($o == $pag) ? array(' is-current','aria-current="page"') : array('',''); 
+	$paginat[0] .= '<li><a href="?pag='.$o.'" class="pagination-link'.$current[0].'" '.$current[1].'>'.$o.'</a></li>'.PHP_EOL;	
+}
+
+$ant = ($pag > 1) ? array(($pag-1),'',($pag-1)) : array('#','is-disabled','No puedes avanzar más');
+$sig = ($pag < $totalpags) ? array(($pag+1),'',($pag+1)) : array('#','is-disabled','No puedes retroceder más');
+$paginacion= '
+<nav class="pagination is-small" role="navigation" aria-label="pagination">
+  <a href="?pag='.$ant[0].$ppag.'" class="pagination-previous '.$ant[1].'" title="'.$ant[2].'">Más reciente</a>
+  <a href="?pag='.$sig[0].$ppag.'" class="pagination-next '.$sig[1].'" title="'.$sig[2].'">Más antiguo</a>
+  <ul class="pagination-list">'.$paginat[0].    ' </ul>
+</nav>
+  ';
+// fin paginacion
+
+
+// permisos del usuario
+$paginadorarriba=false;	    
+if ($log){
+    $rolS = "SELECT rolId, Roles.accion FROM Userinfo INNER JOIN Roles ON Roles.id = Userinfo.rolId WHERE Userinfo.id = '$id'";
+    $rolQ = $conn->query($rolS);
+    $rolL = $rolQ->fetch_row();
+    $permisos = explode(',',$rolL[1]);
+
+    if (in_array('ep',$permisos)){
+	    $paginadorarriba=true;	    
+	}
+    // hasta acá.
+}
+
+$listalinks = $paginadorarriba ? $paginacion : '';
+
+
+
+
 $contenido[]='Viendo links'.$filtro.'';
     
 //listado de links
-
 $result = $conn->query($sql) or die(mysqli_error());
-
-
-
-
-// ver tags
-
-
-$listalinks=' <div class="columns">';
+$listalinks .= ' <div class="columns">';
 
 if ($result->num_rows > 0) {
 	$columncount=1;
@@ -146,42 +185,12 @@ if ($result->num_rows > 0) {
 }
 $listalinks.='</div>';
 
-$pags = explode('DESC',$sql);
-$pags = $pags[0].'DESC';
+$listalinks.='<div class="ad">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl.
+</div><hr>';
 
-$pagq = $conn->query($pags);
-$pagt = $pagq->num_rows;
-
-// $opquery = explode('DESC',$opcionquery);
-// $opquery = $opquery[0];
-// $paqs = "SELECT COUNT(*) FROM Linksinfo $opquery";
-// echo "paqs: $paqs";
-// $paql = $pagq->fetch_row();
-//    echo $pagl[0]; // <-- este es el total de links q existen :-D
-//paginación
-
-//$totalpags = ($paql[0] % $linksporpag) ? ($paql[0] / $linksporpag) : (($paql[0] + ($paql[0] % $linksporpag)*10) / $linksporpag);
-$totalpags=($pagt / $linksporpag);
-
-
-$paginat=array(''.'');
-for ($i=0; $i <= $totalpags; $i++) {
-	$o = $i+1;
-	$current = ($o == $pag) ? array(' is-current','aria-current="page"') : array('',''); 
-	$paginat[0] .= '<li><a href="?pag='.$o.'" class="pagination-link'.$current[0].'" '.$current[1].'>'.$o.'</a></li>'.PHP_EOL;	
-}
-
-$ant = ($pag > 1) ? array(($pag-1),'',($pag-1)) : array('#','is-disabled','No puedes avanzar más');
-$sig = ($pag < $totalpags) ? array(($pag+1),'',($pag+1)) : array('#','is-disabled','No puedes retroceder más');
-$listalinks .= '
-<nav class="pagination is-small" role="navigation" aria-label="pagination">
-  <a href="?pag='.$ant[0].$ppag.'" class="pagination-previous '.$ant[1].'" title="'.$ant[2].'">Más reciente</a>
-  <a href="?pag='.$sig[0].$ppag.'" class="pagination-next '.$sig[1].'" title="'.$sig[2].'">Más antiguo</a>
-  <ul class="pagination-list">'.$paginat[0].    ' </ul>
-</nav>
-  ';
-
+$listalinks .= $paginacion;
 $contenido[]=$listalinks;
+
 
 ?>
     

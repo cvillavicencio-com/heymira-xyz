@@ -1,7 +1,7 @@
 <?php
 $idup = isset($_GET['id']) ? intval(cleanget('id')) : $id;
-$us = "SELECT * FROM Userinfo WHERE id = '$idup';";	    
-$uq = $conn->query($us);
+$us = "SELECT DISTINCT *, Roles.info FROM Userinfo INNER JOIN Roles ON Roles.id = Userinfo.rolId WHERE Userinfo.id = '$idup';";
+$uq = $conn->query($us) or die(mysqli_error());
 $ul = $uq->fetch_row();
 
 
@@ -9,10 +9,6 @@ $contenido[] = 'Perfil de '.$ul['1'];
 
 
 $optags = '<img src="css/constru.png">';
-
-
-
-
 
 $linkstopics= '';
 $total=0;

@@ -13,7 +13,7 @@ $m = true;
 if (isset($_SESSION['log']) || isset($_COOKIE['log'])){
     $tokenIn = isset($_SESSION['log']) ? $_SESSION['log']: $_COOKIE['log'];
     // consigue id desde db
-    $tokenS = "SELECT id, setfav, tema FROM Users WHERE token = '$tokenIn';";
+    $tokenS = "SELECT id, setfav, tema, nombre FROM Users WHERE token = '$tokenIn';";
     $tokenQ = $conn->query($tokenS) or die(mysqli_error());
     $tokenL = $tokenQ->fetch_row();
 
@@ -29,8 +29,8 @@ if (isset($_SESSION['log']) || isset($_COOKIE['log'])){
     $log = true;
     $menu = array(
         array('<span class="icon-energy"></span> Nuevo link','nl'),
-        array('<span class="icon-user"></span> Perfil','up'),
         array('<span class="icon-magnifier"></span> Buscar','bu'),
+        array('<span class="icon-user"></span> '.$tokenL[3],'up'),
         array('<span class="icon-logout"></span>','cs'),
     );
     } else {
@@ -133,7 +133,7 @@ if (isset($_GET['f'])){
 
 		    $findelsitio = floatval(microtime());
 		    $tiempodesitio = $findelsitio - $iniciodelsitio;
-		    echo 'Tiempo de carga: ' . $tiempodesitio;
+echo microtime().'<br>Tiempo de carga: ' . substr($tiempodesitio,0,6);
 		    ?>
 		</p>
 
@@ -178,9 +178,9 @@ function cleanget($a){
     return $r;
 }
 
-function imgredirect($src,$loc,$txt,$delay=FALSE){
-    
-    return '<img src="'.$src.'" onload="setTimeout((window.location.replace(\''.$loc.'\')),5000);"><p>'.$txt.'</p>';
+function imgredirect($src,$loc,$txt,$alert=FALSE){
+    $alert = $alert ? 'alert(\''.$txt.'\');' : false;
+    return '<img src="'.$src.'" onload="'.$alert.'setTimeout((window.location.replace(\''.$loc.'\')),5000);"><p>'.$txt.'</p>';
 }
 // fin funciones
 

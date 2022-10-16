@@ -11,20 +11,21 @@ drop table if exists Subcategories;
 drop table if exists Categories;
 drop table if exists Catsets;
 drop view if exists Userinfo;
+drop table if exists Refers;
 drop table if exists Users;
-drop table if exists Usertypes;
+drop table if exists Roles;
 SET FOREIGN_KEY_CHECKS = 1;
 -- -- ...y comienza de nuevo.
 
 
-CREATE TABLE Usertypes(
-       id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-       nombre   VARCHAR(15) NOT NULL      
+CREATE TABLE Roles(
+       id	INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+       nombre 	VARCHAR(15) NOT NULL,
+       info	VARCHAR(100) NOT NULL,
+       clave 	VARCHAR(10),
+       accion	VARCHAR(1000) DEFAULT '*'
 );
 
-INSERT INTO Usertypes (nombre) VALUES ('colaborador');
-INSERT INTO Usertypes (nombre) VALUES ('moderador');
-INSERT INTO Usertypes (nombre) VALUES ('administrador');
 
 CREATE TABLE Users(
        id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -35,16 +36,25 @@ CREATE TABLE Users(
        mail     VARCHAR(300),
        tema 	INT DEFAULT 1,
        setfav	INT DEFAULT 1,
-       utypeId  INT NOT NULL DEFAULT 1,
-       FOREIGN KEY (utypeId) REFERENCES Usertypes(id)
+       rol 	INT DEFAULT 1,
+       refer	VARCHAR(15),
+       FOREIGN KEY (rol) REFERENCES Roles(id)
+);
+
+CREATE TABLE Refers (
+       id       INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+       code	VARCHAR(80) NOT NULL,
+       ownerId	INT NOT NULL,
+       FOREIGN KEY (ownerId) REFERENCES Users(id),
+       userId	INT,
+       FOREIGN KEY (userId) REFERENCES Users(id)
+
 );
 
 
-
 CREATE VIEW Userinfo AS
-SELECT Users.id, Users.nombre, Users.info, Users.mail, Usertypes.nombre AS 'tipo'
-FROM Users RIGHT JOIN Usertypes ON Users.utypeId = Usertypes.id
-;
+SELECT Users.id, Users.nombre, Users.info, Users.mail, Roles.nombre AS 'rol', Roles.id AS 'rolId', Roles.info AS 'rolInfo', Users.token
+FROM Users RIGHT JOIN Roles ON Users.rol = Roles.id;
 
 CREATE TABLE Catsets(
        id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -79,6 +89,10 @@ CREATE TABLE States(
        id	 INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
        nombre	 VARCHAR(12) NOT NULL
 );
+
+INSERT INTO States (nombre) VALUES ('visible');
+INSERT INTO States (nombre) VALUES ('eliminado');
+INSERT INTO States (nombre) VALUES ('borrador');
 
 
 CREATE TABLE Links (
@@ -151,12 +165,32 @@ CREATE TABLE Comments(
        fecha    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- poblation
 
-INSERT INTO Usertypes (nombre) VALUES ('colaborador');
-INSERT INTO Usertypes (nombre) VALUES ('moderador');
-INSERT INTO Usertypes (nombre) VALUES ('administrador');
 
-INSERT INTO States (nombre) VALUES ('visible');
-INSERT INTO States (nombre) VALUES ('eliminado');
-INSERT INTO States (nombre) VALUES ('borrador');
+
+-- sobre accion:
+--   el valor que guarda es un string con valores separados por comas (que es procesado por php como array)
+--   está pendiente mejorar una nomenclatura más flexible, para efectos de continuidad, será por ahora lo siguiente;
+--
+--     ec: editar categorias
+--     ep: editar links propios
+--     el: editar/bloquear links
+--     bc: bloquear comentarios
+--     vs: votar sanción a usuario
+--     su: sancionar usuario
+--     conf: configurar sitio
+--     susp: suspender sitio
+
+
+INSERT INTO Roles (nombre, info) VALUES ('Colaborador','Usuario que comparte links');
+INSERT INTO Roles (nombre, info, accion) VALUES ('Entusiasta','Usuario con interés en compartir links.', 'ep');
+INSERT INTO Roles (nombre, info, accion) VALUES ('Entusiasta comprometido','Usuario con interés en compartir links y cuidar que este espacio nos sirva a todos.', 'el');
+INSERT INTO Roles (nombre, info, accion) VALUES ('Moderador','Usuario con interés en compartir links y cuidar la paz de este espacio.', 'el,bc,vs');
+INSERT INTO Roles (nombre, info, accion) VALUES ('Responsable','Usuario con interés en compartir links y tomar decisiones respecto al uso de este espacio','el,bc,vs,su');
+INSERT INTO Roles (nombre, info, accion) VALUES ('Administrador','Usuario con interés en compartir links y encargado de la existencia de este espacio', 'el,bc,vs,su,conf,susp');
+
+
+
+
+INSERT INTO `Users` (`id`, `nombre`, `clave`, `token`, `info`, `mail`, `tema`, `setfav`, `rol`, `refer`) VALUES (NULL, 'cam', '', NULL, NULL, NULL, '1', '1', '1', NULL);
+INSERT INTO `Refers` (`id`, `code`, `ownerId`, `userId`) VALUES (NULL, '123', '1', NULL);
