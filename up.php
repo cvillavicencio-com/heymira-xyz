@@ -12,7 +12,7 @@ $optags = '<img src="css/constru.png"><br>';
 
 $iS = "SELECT * FROM Refers WHERE ownerId = '$id' AND userId = '' IS NULL;";
 $iQ = $conn->query($iS);
-if ($iQ->num_rows > 0) {
+if ($iQ->num_rows > 0 && $idup == @$id) {
     $optags .= '<hr><b>Invitaciones disponibles</b>';
 
     while($iL = $iQ->fetch_assoc()) {

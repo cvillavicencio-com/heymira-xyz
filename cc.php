@@ -1,6 +1,10 @@
 <?php
 // cc : CREAR CUENTA
-
+if (isset($_GET['cod'])){
+    $menu=array();
+    $cod = cleanget('cod');
+    $block = 'readonly';
+}
 $contenido[] = 'Crear cuenta';
 $contenido[] = '
 <div class="columns">
@@ -26,7 +30,7 @@ $contenido[] = '
 <div class="field">
   <label class="label">Código de invitación</label>
   <div class="control">
-    <input name="cinv" class="input" placeholder="Para que recuperes tu cuenta, si olvidas tu contraseña" value="'.@$_GET['cod'].'">
+    <input name="cinv" class="input" placeholder="Para que recuperes tu cuenta, si olvidas tu contraseña" value="'.@$cod.'" '.@$block.' >
   </div>
 </div>
 <div class="field">
@@ -38,7 +42,7 @@ $contenido[] = '
 <div class="field">
   <div class="control">
     <button class="button is-link">Crear cuenta</button>
-  </div>
+</div>
 </div>
 
 </form>

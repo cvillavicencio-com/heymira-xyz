@@ -152,6 +152,9 @@ echo 'Tiempo de carga: ' . substr($tiempodesitio,0,6);
 
 <?php
 
+
+$conn->close();
+                         
 function nologged() {
     return array('error','no estás conectado');
 }
@@ -163,10 +166,10 @@ function cleanpost($a) {
     if (is_array($_POST[$a])) {
 	$r=array();
 	foreach ($_POST[$a] as &$b){
-	    $r[] = htmlspecialchars($b);
+	    $r[] = htmlspecialchars($b, ENT_QUOTES);
 	}
     } elseif (!is_array($_POST[$a])) {
-	$r = isset($_POST[$a]) ? htmlspecialchars($_POST[$a]) : false;
+        $r = isset($_POST[$a]) ? htmlspecialchars($_POST[$a], ENT_QUOTES) : false;
     } else {
 	$r = false;
     }    
@@ -174,7 +177,7 @@ function cleanpost($a) {
 }
 
 function cleanget($a){    
-    $r = isset($_GET[$a]) ? htmlspecialchars($_GET[$a]) : false;
+    $r = isset($_GET[$a]) ? htmlspecialchars($_GET[$a], ENT_QUOTES) : false;
     return $r;
 }
 
