@@ -133,7 +133,7 @@ if (isset($_GET['f'])){
 
 		    $findelsitio = floatval(microtime());
 		    $tiempodesitio = $findelsitio - $iniciodelsitio;
-echo microtime().'<br>Tiempo de carga: ' . substr($tiempodesitio,0,6);
+echo 'Tiempo de carga: ' . substr($tiempodesitio,0,6);
 		    ?>
 		</p>
 

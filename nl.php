@@ -187,8 +187,8 @@ $contenido[] = '
       <input name="url" class="input" type="text" onblur="checkURL(this)" placeholder="Dirección del link"'.@$url.' required>
     </div>
     <div class="field">
-      <label class="label is-small">URL extra (opcional)</label>
-      <input name="urlextra" class="input  is-small" onblur="checkURL(this)" type="text"'.@$urlextra.' placeholder="Respaldo o link relacionado al mismo tema">
+      <label class="label is-small">URL extra (opcional, acepta otros protocolos)</label>
+      <input name="urlextra" class="input  is-small" type="text"'.@$urlextra.' placeholder="Respaldo o link relacionado al mismo tema">
     </div>
   </div>
 
