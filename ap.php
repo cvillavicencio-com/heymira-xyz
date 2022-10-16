@@ -73,5 +73,5 @@ if (isset($archivo) && $archivo != "") {
 }
 	    
 // notifica
-$contenido[] = $res.imgredirect('logo.png','?f=up','Información actualizada exitosamente.');
+$contenido[] = $res.imgredirect('css/ojo.gif','?f=up','Información actualizada exitosamente.');
 ?>

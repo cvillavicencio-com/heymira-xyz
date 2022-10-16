@@ -21,7 +21,7 @@ if ($scQ->num_rows > 0) {
 
 $sel ='';
 $apariec ='';
-$temas = array('del futuro','normalFome()','oscuro');
+$temas = array('del futuro','normalFome()','Subhumanoid (Reccardi)');
 for ($i = 0; $i <= 2; $i++){
     $sel = $i == intval($el[6]) ? ' selected':false;
     $apariec .= '<option value="'.$i.'"'.$sel.'>'.$temas[$i].'</option>';

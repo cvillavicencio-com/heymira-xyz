@@ -1,4 +1,6 @@
 <?php
+$err = 'Error: '; // string con error.
+
 switch($f){
 case 'cc': if ($log){$contenido=logged();break;} include('cc.php'); break;
 

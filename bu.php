@@ -2,7 +2,7 @@
 $buscador= '
 <form action="." method="GET">
 <div class="field">
-  <label class="label">Name</label>
+  <label class="label">Término de búsqueda</label>
   <div class="control">
     <input name="buscar" class="input is-info" type="text" placeholder="Text input" required>
   </div>

@@ -78,5 +78,13 @@ footer{
     padding:10px;
 
     margin:auto;
-    
+
+}
+
+.ad{
+    background-image: url('fondo-ad.png');
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: repeat;
+
 }
