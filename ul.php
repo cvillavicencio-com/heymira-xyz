@@ -31,7 +31,7 @@ $ll = $lq->fetch_row();
 // 0  1      2    3   4        5      6       7     8    9       10    11       12     13    14
 
 if ($ll[0] == $id){
-    $us = "UPDATE Links SET titulo='$titulo', info='$info',url='$url',topicId='$topicid', creado = creado, catsetId='$catset' $urlextraq WHERE id='$idediting';";
+    $us = "UPDATE Links SET titulo='$titulo', info='$info',url='$url',topicId='$topicid', catsetId='$catset' $urlextraq WHERE id='$idediting';";
     $uq = $conn->query($us) or die(mysqli_error());
 
     // DELETE FROM table_name WHERE condition;

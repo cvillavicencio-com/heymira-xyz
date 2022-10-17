@@ -33,7 +33,8 @@
 </form>
 </div>
 <div class="column">
-	    acá va una imagen bonita
+	    
+<img src="css/logosub.gif" width="100%">
 	    </div>
 	    </div>	    ';
 ?>
