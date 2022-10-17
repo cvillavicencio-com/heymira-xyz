@@ -168,7 +168,7 @@ if (is_int(intval($l))){  // ver link
 	$comentarios = '<div class="box">Inicia sesión o crea una cuenta para dejar un comentario</div>';
     }
 
-    $vistalink='
+    $vistalink = '
 <div class="columns">
   <div class="column">
     <div class="box">
@@ -178,11 +178,24 @@ if (is_int(intval($l))){  // ver link
   <div class="column is-one-third">
     <div class="box">
 	  <b>'.$ll['1'].'</b><br>
-<a href="'.$ll['3'].'">	  '.$ll['3'].' <span class="icon-link"></span></a><br><br>
-	  <span class="autor">URL extra: <a href="'.$ll['4'].'" target="_blank">'.$ll['4'].'</a></span><br><br>
-
+          <a rel="noreferrer noopener nofollow" href="'.$ll['3'].'">'.$ll['3'].' <span class="icon-link"></span></a>';
+    if (!empty($ll['4'])) {
+	$vistalink .= '
+          <br><br>
+	  <span class="autor">URL extra:
+          <a rel="noreferrer noopener nofollow" href="'.$ll['4'].'" target="_blank">'.$ll['4'].'</a>
+          </span><br><br>
+	  ';
+    }
+    
+    $vistalink .= '
 <hr>Creado por<br>
-	  <span class="autor">&nbsp; '.$ll['8'].'</span><br><br>
+
+	  <span class="autor">&nbsp; '.$ll['8'].'</span><br>
+Creación/modificación<br>
+	  <span class="autor">&nbsp; '.$ll['5'].'</span><br>
+
+<br><br>
 
 	    Taxonomia:
       <br><span class="categ">
