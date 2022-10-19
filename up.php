@@ -94,12 +94,12 @@ WHERE Topics.id = '{$ut[0]}'; ";
         <img src="avatars/'.$avatar.'.png">
         <p class="title is-4">'.$ul[1].@$mail.'</p>
         <p class="subtitle is-6">'.$ul[4].'</p>
-        <p class="subtitle is-6"><a href="?u='.$id.'">Ver links ('.$total.')</a></p>'.$editperfil.'
+        <p class="subtitle is-6"><a href="?u='.$idup.'">Ver links ('.$total.')</a></p>'.$editperfil.'
         </div>
         </div>
 	</div>
 	<div class="column">
-	'.$ul[2].'
+	'.nl2br($ul[2]).'
 	</div>
 	</div>
 	</div>

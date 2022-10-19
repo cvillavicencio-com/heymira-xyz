@@ -32,6 +32,8 @@ if (is_int(intval($l))){  // ver link
 	    $escribircoment = true; // temporalmente no habilitado
 	} elseif (in_array('el',$permisos)){
 	    $editlink = '<a href="?f=nl&link='.$ll['0'].'"><button class="button is-danger">Editar el link de<br>'.$ll[8].'</button></a>';	    
+	} else {
+	    $editlink = '';
 	}
     }
     // fin permisos
@@ -59,7 +61,7 @@ if (is_int(intval($l))){  // ver link
     if ($log){
 
 	$noautor = ($ll[7] != $id) ? 'AND estado = 1':false;
-	$vs = "SELECT Comments.id AS 'comid', texto, estado, autorId,linkId, fecha , Users.nombre AS 'user', Users.id as 'usrid' FROM Comments INNER JOIN Users ON Comments.autorId = Users.id WHERE linkId='$l' $noautor;";
+	$vs = "SELECT Comments.id AS 'comid', texto, estado, autorId,linkId, fecha , Users.nombre AS 'user', Users.id as 'usrid' FROM Comments INNER JOIN Users ON Comments.autorId = Users.id WHERE linkId='$l' $noautor ORDER BY comid ASC;";
 	$vq = $conn->query($vs);
 
 	$coms ='

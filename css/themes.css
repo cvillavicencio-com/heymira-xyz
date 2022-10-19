@@ -25,3 +25,12 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+.cbody-3{
+    /* tema: oscuro */
+    background-image: url('smallworlds.png') ;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

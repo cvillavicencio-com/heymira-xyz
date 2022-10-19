@@ -8,7 +8,7 @@ $com = nl2br(cleanpost('com'));
 $lid = intval(cleanpost('lid'));
 if ($com && $lid){
     $ds = "INSERT INTO Comments (texto, autorId, linkId) VALUES ('$com','$id','$lid');";
-    echo $ds;
+
     $dq = $conn->query($ds) or die(mysqli_error());
 
 
@@ -16,7 +16,7 @@ if ($com && $lid){
     $contenido[] =imgredirect('logo.png','?l='.$lid,'Comentario recibido exitosamente.');
 
 } else {
-    $contenido = array('Error',imgredirect('logo.png','?l='.$lid,'El mensaje no se pudo guardar.'));
+    $contenido = array('Error',imgredirect('logo.png','?l='.$lid,'El mensaje no se pudo guardar.',true));
 
 }
 

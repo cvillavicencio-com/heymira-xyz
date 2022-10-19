@@ -9,7 +9,7 @@ $el=$eq->fetch_row();
 //id nombre clave info mail tema setfav utypeId
 //0  1      2     3    4    5    6
 
-$info = nl2br(substr(cleanpost('info'),0,1000));
+$info = substr(cleanpost('info'),0,1000);
 if ($info != $el['3']){ // info cambió ;-)
     $is="UPDATE Users SET info='$info' WHERE id='$id';";
     $iq=$conn->query($is) or die(mysqli_error());		

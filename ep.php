@@ -21,8 +21,10 @@ if ($scQ->num_rows > 0) {
 
 $sel ='';
 $apariec ='';
-$temas = array('del futuro','normalFome()','Subhumanoid (Reccardi)');
-for ($i = 0; $i <= 2; $i++){
+// esto DEBE CAMBIAR, pero funciona ok por mientras
+// los temas están en css/themes.css son la clase "cbody-#" # es el índice del array $temas acá abajo.
+$temas = array('del futuro','normalFome()','Subhumanoid (Reccardi)','Small Worlds (Kandinsky)');
+for ($i = 0; $i <= (count($temas)-1); $i++){
     $sel = $i == intval($el[6]) ? ' selected':false;
     $apariec .= '<option value="'.$i.'"'.$sel.'>'.$temas[$i].'</option>';
 }
@@ -115,7 +117,7 @@ $form= '
 <div class="field">
   <label class="label">Información</label>
   <div class="control">
-    <textarea class="textarea" name="info" maxlength="300" placeholder="Trescientos caracteres para describirte.">'.$el['4'].'</textarea>
+    <textarea class="textarea" name="info" maxlength="300" placeholder="Trescientos caracteres para describirte.">'.str_replace('<br />','',$el['4']).'</textarea>
   </div>
 </div>
 </div>
