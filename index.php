@@ -56,7 +56,9 @@ if (isset($_GET['f'])){
     $f = cleanget('f');
     include('f.php');
 } elseif (isset($_GET['l'])){
-    include('vl.php');    
+    include('vl.php');
+} elseif (isset($_GET['info'])){
+    include('info/'.cleanget('info').'.php');
 } else {
     include('ll.php');
 }
