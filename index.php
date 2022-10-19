@@ -58,7 +58,14 @@ if (isset($_GET['f'])){
 } elseif (isset($_GET['l'])){
     include('vl.php');
 } elseif (isset($_GET['info'])){
-    include('info/'.cleanget('info').'.php');
+    $info = 'info/'.str_replace('/','',str_replace('.','',cleanget('info'))).'.php';
+    if (!file_exists($info)){
+        $contenido = array('Página no existe',imgredirect('css/ojo.gif','.','Página no existe'));
+    } else {
+        include($info);
+    }
+    
+
 } else {
     include('ll.php');
 }
@@ -129,7 +136,7 @@ if (isset($_GET['f'])){
 
 
 		<p>
-		    <strong>Heymira</strong> es <a href="info" target="_blank">software libre</a>.<br>
+		    <strong>Heymira</strong> es <a href="?info=licencia">software libre</a>.<br>
 
 		    <?php
 
