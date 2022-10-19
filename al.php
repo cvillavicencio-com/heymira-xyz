@@ -12,7 +12,7 @@ $catset  = intval(cleanpost('catset'));
 
 // query opcionales: urlextra
 $urlextraq = $urlextra ? array(', urlextra',", '$urlextra'") : array(false,false);
-	    
+
 // verificar si link ya existe
 $al = "SELECT id FROM Links WHERE url = '$url';";
 $result= $conn->query($al);
@@ -23,22 +23,39 @@ if ($result->num_rows == 0){ // link no existe. bien
     $gq = $conn->query($gs);
     $gl = $gq->fetch_row();
     $idmax=$gl[0];
-
-                
+    
     $ahora = date('Y-m-d H:i:s');
     $l = "INSERT INTO Links (titulo, info, url, topicId, catsetId, creado, autorId {$urlextraq[0]}) VALUES ('$titulo','$info','$url','$topicid', '$catset','$ahora', '$id' {$urlextraq[1]});";
     $resultl=$conn->query($l) or die(mysqli_error($conn));
     if (!empty($resultl)){
         if ($tags){
-			$linkid = $conn->insert_id;
-			$tq='';
-			foreach($tags0 as &$tag){
-			    $tag = (substr($tag,0,1) == ' ') ? substr($tag,1) : $tag;
-			    $tq = "INSERT INTO Tagslinks (tag,linkid) VALUES ('$tag','$linkid');";
-			    $resultag=$conn->query($tq) or die(mysqli_error($conn));
-			}
+	    $linkid = $conn->insert_id;
+	    $tq='';
+	    foreach($tags0 as &$tag){
+		$tag = (substr($tag,0,1) == ' ') ? substr($tag,1) : $tag;
+		$tq = "INSERT INTO Tagslinks (tag,linkid) VALUES ('$tag','$linkid');";
+		$resultag=$conn->query($tq) or die(mysqli_error($conn));
+	    }
         }
-        $contenido[] =imgredirect('css/ojo.gif','?l='.($idmax+1),'Link guardado exitosamente.');
+
+        // Cuantos Links ha publicado el usuario?
+
+        $clS = "SELECT COUNT(id) FROM Linksinfo WHERE usrid='$id';";
+	$clQ = $conn->query($clS);
+	$clL = $clQ->fetch_row();
+	$totallinks = $clL[0];
+
+	include('permisos.php');
+	foreach ($permisos as &$p){
+	    if ($totallinks == $p[0]){
+		$perS = "UPDATE Users SET rol = '{$p[1]}' WHERE id = '$id';";
+		$perQ = $conn->query($perS);	
+	    }
+	}
+
+        
+
+            $contenido[] =imgredirect('css/ojo.gif','?l='.($idmax+1),'Link guardado exitosamente.');
     } else {
         $contenido[] = 'error guardando link';
     }
