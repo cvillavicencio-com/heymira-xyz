@@ -134,7 +134,14 @@ if ($result->num_rows > 0) {
 <div class="clink">
 <div class="columns">
 <div clasS="column">
-<span class="link"><a href="?l='.$row['id'].'"><span class="icon-bubble"></span></a> <a rel="noreferrer noopener nofollow" target="_blank" href="'.$row['url'].'">'.$row['titulo'].'</a></span><br>
+
+<span class="link">
+  <a href="?l='.$row['id'].'" class="titulolink">'.$row['titulo'].'</a><br>
+  <a rel="noreferrer noopener nofollow" target="_blank" href="'.$row['url'].'"><small><span class="icon-link"></span> Ver link</small></a>
+
+</span>
+
+<br>
 <span class="icon-user"></span>  <span class="autor"><a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span>
 </div>
 <div class="column">
