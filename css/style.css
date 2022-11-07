@@ -43,7 +43,9 @@ div.comnv{
     animation-fill-mode: forwards;
 }
 
-
+.linkbox{
+    border-radius: 0px 20px;
+}
 .ccont {
     background-color:rgba(255,255,255,0.8);
     padding:25px;
@@ -88,3 +90,4 @@ footer{
     background-repeat: repeat;
 
 }
+

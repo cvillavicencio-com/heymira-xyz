@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 session_start();
 $iniciodelsitio = floatval(microtime());
 include('dbconfig.php');
-$tema=1;
+$tema=3;
 $m = true;
 
 if (isset($_SESSION['log']) || isset($_COOKIE['log'])){
@@ -71,86 +71,91 @@ if (isset($_GET['f'])){
 }
 ?>
 
-<!DOCTYPE html>
-<html class="cbody-<?php echo $tema; ?>">
-    <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>HeyMira!</title>
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="css/themes.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">    
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-	<link rel="icon" type="image/x-icon" href="favicon.ico">
+    <!DOCTYPE html>
+        <html class="cbody-<?php echo $tema; ?>">
+	    <head>
+		<meta charset="utf-8" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta content="<?php echo @$ogtitle; ?>" property='og:title'>
+		<meta content="<?php echo @$ogdescr; ?>" property='og:description'>
+		<meta content="<?php echo "https://heymira.xyz/"@$ogurl; ?>" property='og:url'>
+		<meta content="<?php echo "Heymira.xyz"; ?>" property='og:site_name'>      
+      <title>HeyMira!</title>
+      <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="css/themes.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+      <link rel="icon" type="image/x-icon" href="favicon.ico">
 
 
-    </head>
-    <body >
-	<nav class="has-background-primary navbar"  role="navigation" aria-label="main navigation">
-	    <div class="navbar-brand">
-		<a class="navbar-item" href=".">
-		    <img src="logo.gif" width="112" height="28">
-		</a>
-		<div class="buttons">
-		    <?php
-		    if ($m){
-			foreach($menu as &$boton){
-			    echo '
+      </head>
+      <body >
+      <nav class="has-background-primary navbar"  role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+      <a class="navbar-item" href=".">
+      <img src="logo.gif" width="112" height="28">
+      </a>
+      <div class="buttons">
+<?php
+      if ($m){
+          foreach($menu as &$boton){
+              echo '
 	      <a href="?f='.$boton[1].'" class="button is-small is-rounded">
 		  <strong>'.$boton[0].'</strong>
               </a>';
-			}
-		    } else {
-			echo'<a href="." class="button">
+          }
+      } else {
+          echo'<a href="." class="button">
 		  <strong>Volver al inicio</strong>
               </a>
 			';
-		    }
-		    ?>
-		    <?php
-		    //echo @$estasen;  ?>
-		</div>
+      }
+?>
+<?php
+    //echo @$estasen;  ?>
+    </div>
 
 	    </div>
 	    
 
-	</nav>
+        </nav>
 	
-	<section class="section">
-	    <div class="container ccont">
-		<h1 class="title">
-		    <a name="title"></a>
-		    <?php
-		    echo $contenido[0];
-		    ?>
-		</h1>
+        <section class="section">
+          <div class="container ccont">
+          <h1 class="title">
+          <a name="title"></a>
+<?php
+      echo $contenido[0];
+?>
+          </h1>
 
-		<?php
-		echo $contenido[1];
-		?>
+<?php
+              echo $contenido[1];
+?>
 
-	    </div>
-	</section>
+                  </div>
+                      </section>
 
-	<footer>
+                      <footer>
 
 
-		<p>
-		    <strong>Heymira</strong> es <a href="?info=licencia">software libre</a>.<br>
+                      <p>
+                      <strong>Heymira</strong> es <a href="?info=licencia">software libre</a>.<br>
 
-		    <?php
+<?php
 
-		    $findelsitio = floatval(microtime());
-		    $tiempodesitio = $findelsitio - $iniciodelsitio;
+          $findelsitio = floatval(microtime());
+$tiempodesitio = $findelsitio - $iniciodelsitio;
 echo 'Tiempo de carga: ' . substr($tiempodesitio,0,6);
-		    ?>
-		</p>
+?>
+    </p>
 
-	</footer><br>
-    </body>
-    <script type="text/javascript" src="js/script.js" async></script>
+        </footer><br>
+        </body>
+        <script type="text/javascript" src="js/script.js" async></script>
 
-</html>
+                         </html>
 
 
 

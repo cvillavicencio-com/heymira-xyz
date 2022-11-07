@@ -19,38 +19,38 @@ $limit = $pag ? "LIMIT $linksporpag OFFSET ".($linksporpag * ($pag-1)) : 'LIMIT 
 
 if ( $u || $cat || $sub || $top ) {
 
-	$opcionquery=' WHERE ';
-	if ($u){
-	    $quser="SELECT nombre FROM Users WHERE id = '$u';";
-	    $ruser=$conn->query($quser)->fetch_row();
-	    $filtro.=' del usuario '.$ruser['0'];
-	    $opcionquery .=" usrid='$u' ";
+    $opcionquery=' WHERE ';
+    if ($u){
+	$quser="SELECT nombre FROM Users WHERE id = '$u';";
+	$ruser=$conn->query($quser)->fetch_row();
+	$filtro.=' del usuario '.$ruser['0'];
+	$opcionquery .=" usrid='$u' ";
         $ppag.='&u='.$u;
-	}
-	if ( $u && ($cat || $sub || $top) ){
-	    $opcionquery .=' AND ';
-	}
-	if ( $cat ){
-	    $qcat="SELECT nombre FROM Categories WHERE id = '$cat'";
-	    $rcat=$conn->query($qcat)->fetch_row();
-	    $filtro.=' en categoría <i>'.$rcat['0'].'</i>';
-	    $opcionquery .="  catid = '$cat' ";
+    }
+    if ( $u && ($cat || $sub || $top) ){
+	$opcionquery .=' AND ';
+    }
+    if ( $cat ){
+	$qcat="SELECT nombre FROM Categories WHERE id = '$cat'";
+	$rcat=$conn->query($qcat)->fetch_row();
+	$filtro.=' en categoría <i>'.$rcat['0'].'</i>';
+	$opcionquery .="  catid = '$cat' ";
         $ppag.='&cat='.$cat;
 
-	} elseif ( $sub ){
-	    $qsub="SELECT nombre FROM Subcategories WHERE id = '$sub'";
-	    $rsub=$conn->query($qsub)->fetch_row();
-	    $filtro.=' en subcategoría <i>'.$rsub['0'].'</i>';
-	    $opcionquery .="  subcatid = '$sub' ";
+    } elseif ( $sub ){
+	$qsub="SELECT nombre FROM Subcategories WHERE id = '$sub'";
+	$rsub=$conn->query($qsub)->fetch_row();
+	$filtro.=' en subcategoría <i>'.$rsub['0'].'</i>';
+	$opcionquery .="  subcatid = '$sub' ";
         $ppag.='&sub='.$sub;
 
-	} elseif ( $top ){
-	    $qtop="SELECT nombre FROM Topics WHERE id = '$top'";
-	    $rtop=$conn->query($qtop)->fetch_row();
-	    $filtro.=' en tópico <i>'.$rtop['0'].'</i>';
-	    $opcionquery .="  topicid = '$top' ";
+    } elseif ( $top ){
+	$qtop="SELECT nombre FROM Topics WHERE id = '$top'";
+	$rtop=$conn->query($qtop)->fetch_row();
+	$filtro.=' en tópico <i>'.$rtop['0'].'</i>';
+	$opcionquery .="  topicid = '$top' ";
         $ppag.='&top='.$top;
-	}
+    }
 
 
 } elseif ($bus) {
@@ -83,9 +83,9 @@ $pagt = $pagq->num_rows;
 $totalpags=($pagt / $linksporpag);
 $paginat=array(''.'');
 for ($i=0; $i <= $totalpags; $i++) {
-	$o = $i+1;
-	$current = ($o == $pag) ? array(' is-current','aria-current="page"') : array('',''); 
-	$paginat[0] .= '<li><a href="?pag='.$o.'" class="pagination-link'.$current[0].'" '.$current[1].'>'.$o.'</a></li>'.PHP_EOL;	
+    $o = $i+1;
+    $current = ($o == $pag) ? array(' is-current','aria-current="page"') : array('',''); 
+    $paginat[0] .= '<li><a href="?pag='.$o.'" class="pagination-link'.$current[0].'" '.$current[1].'>'.$o.'</a></li>'.PHP_EOL;	
 }
 
 $ant = ($pag > 1) ? array(($pag-1),'',($pag-1)) : array('#','is-disabled','No puedes avanzar más');
@@ -109,31 +109,34 @@ if ($log){
     $permisos = explode(',',$rolL[1]);
 
     if (in_array('ep',$permisos)){
-	    $paginadorarriba=true;	    
-	}
+	$paginadorarriba=true;	    
+    }
     // hasta acá.
 }
 
 $listalinks = $paginadorarriba ? $paginacion : '';
 
 
-
-
 $contenido[]='Viendo links'.$filtro.'';
-    
+
 //listado de links
 $result = $conn->query($sql) or die(mysqli_error());
-$listalinks .= ' <div class="columns">';
+$listalinks .= '<div class="columns">';
 
 if ($result->num_rows > 0) {
-	$columncount=1;
-	$listaok=true;
-	while($row = $result->fetch_assoc()) {
-	    $listalinks .= '
-<div class="column is-one-third">
+    $columncount=1;
+
+    $listaok=true;
+    while($row = $result->fetch_assoc()) {
+
+	$r = substr(sha1($row['cat']),0,3);
+	$colorfond = '#'.substr($r,0,1).'d'.substr($r,1,1).'d'.substr($r,2,1).'d';
+
+	$listalinks .= '
+<div class="column">
 <div class="clink">
-<div class="columns">
-<div clasS="column">
+<div class="columns linkbox" style="border: solid '.$colorfond.' 1px;" >
+<div clasS="column" >
 
 <span class="link">
   <a href="?l='.$row['id'].'" class="titulolink">'.$row['titulo'].'</a><br>
@@ -169,26 +172,26 @@ if ($result->num_rows > 0) {
 </div>
 </div>
 </div>
-';
-	    if (is_int($columncount/3)){  // cantidad de columnas, acá :D
-            $listalinks .='</div> <div class="columns">';
-            $listaok=false;
-	    } else {
-            $listaok=true;
-	    }
-	    $columncount++;
-	    
-	    /*
-          SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
-          Users.id AS 'usrid', Users.nombre AS 'user',
-          Topics.id AS 'topicid', Topics.nombre AS 'topic',
-          Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
-          Categories.id AS 'catid', Categories.nombre As 'cat'
-        */ 
-
-	    
-	    //    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
+  ';
+	if (is_int($columncount/3)){  // cantidad de columnas, acá :D
+	    $listalinks .='</div> <div class="columns">';
+	    $listaok=false;
+	} else {
+	    $listaok=true;
 	}
+	$columncount++;
+	
+	/*
+           SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
+           Users.id AS 'usrid', Users.nombre AS 'user',
+           Topics.id AS 'topicid', Topics.nombre AS 'topic',
+           Subcategories.id AS 'subcatid', Subcategories.nombre AS 'subcat',
+           Categories.id AS 'catid', Categories.nombre As 'cat'
+         */ 
+
+	
+	//    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
+    }
 }
 $listalinks.='</div>';
 
