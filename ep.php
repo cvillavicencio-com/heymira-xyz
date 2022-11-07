@@ -33,7 +33,9 @@ $prefs= '
 <b>Preferencias</b><br>
 <div class="columns">
 <div class="column">
-<p>Apariencia</p>
+<u>Apariencia</u>
+<div class="field">
+<p>Fondo</p>
 <div class="control">
   <div class="select">
     <select name="tema">
@@ -42,7 +44,10 @@ $prefs= '
   </div>
 </div>
 </div>
+</div>
 <div class="column">
+<u>Opciones</u>
+<div class="field">
 <p>Set de categorías por defecto</p>
 <div class="control">
   <div class="select">
@@ -52,19 +57,62 @@ $prefs= '
   </div>
 </div>
 </div>
+</div>
 <div class="column">
+<u>Cuenta</u>
+<div class="field">';
+
+
+
+$prefs .= '';
+$vertokS = "SELECT * FROM Tokens WHERE usrId = '$id';";
+$vertokQ = $conn->query($vertokS);
+$vertokL = $vertokQ->fetch_row();
+
+$prefs .= '
+<p>Notificar en otros sitios <small><a href="?info=notificar_fuera">qué?</a></small></p>
+<i>Mastodon</i>
+    <input class="input" name="mstin" type="text" placeholder="instancia de mastodon" value="'.@$vertokL[2].'">
+    <input class="input" name="msttk" type="text" placeholder="token" value="'.@$vertokL[3].'">
+<br><br><i>Telegram</i>
+    <input class="input" name="tg_id" type="text" placeholder="id del chat" value="'.@$vertokL[6].'">
+
+</div>
+<hr>
+<div class="field">
+  <p>Cambiar contraseña</p>
+  <div class="control">
+<i>Contraseña actual</i>
+    <input type="password" class="input" name="claveno" type="text" placeholder="Dejar en blanco si quieres conservar contraseña actual">
+<i>Contraseña nueva</i>
+    <input type="password" class="input" name="clavesi" type="text" placeholder="Dejar en blanco si quieres conservar contraseña actual">
+  </div>
+  <div class="control">
+    <label class="checkbox">
+      <input name="conf1" value="1" type="checkbox">
+      Quiero cambiar mi contraseña.</label><br>
+    <label class="checkbox">
+      <input name="conf2" value="2" type="checkbox">
+      En serio, quiero cambiar mi contraseña. 
+    </label>
+  </div>
+</div>
+<hr>
+
+
+    <div class="field">
 <p>Visibilidad de la cuenta</p>
 <div class="control">
   <div class="select">
     <select>
       <option>Pública</option>
     </select>
-  </div>
+  </div></div>
 </div>
 </div>
 </div>
 
-';
+    ';
 
 $form= '
 
@@ -130,28 +178,6 @@ $form= '
 
 <hr>
 <div class="columns">
-<div class="column">
-<div class="field">
-  <label class="label">Nueva contraseña</label>
-  <div class="control">
-    <input class="input" name="clave" type="text" placeholder="Dejar en blanco si quieres conservar contraseña actual">
-  </div>
-</div>
-</div>
-<div class="column">
-<div class="field">
-  <label class="label">Confirmar</label>
-  <div class="control">
-    <label class="checkbox">
-      <input name="conf1" value="1" type="checkbox">
-      Quiero cambiar mi contraseña.</label><br>
-    <label class="checkbox">
-      <input name="conf2" value="2" type="checkbox">
-      En serio, quiero cambiar mi contraseña. 
-    </label>
-  </div>
-</div>
-</div>
 </div>
 <div class="field">
   <div class="control is-centered">

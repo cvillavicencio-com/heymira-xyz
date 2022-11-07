@@ -40,77 +40,116 @@ if ($linkid) { // if está editando link q exista previamente.
     $csL = $csQ->fetch_row();
     $catset = cleanget('catset') ? intval(cleanget('catset')) : $csL[0];
 }
-$cats ='';
 
 $contenido[] = $actionform.' link';
 
-// inicio categorias
 if (!$error){
-$sqlc = "SELECT id, nombre FROM Categories WHERE catsetId = '$catset';";
-$resultc = $conn->query($sqlc);
 
-$colcol=0;
-$colcolsub=0;
-if ($resultc->num_rows > 0) {
-    $cats .= '<div style="max-height: 200px; width:100%; overflow-y:scroll; overflow-x:hidden;">';
-    while($rowc = $resultc->fetch_assoc()) {
-        $color = (is_int($colcol/2)) ? 'has-background-grey-light ': false;
-        $colcol++;
-
-        $combocat[] = array($rowc['id'],$rowc['nombre']);
-	
-        $cats .='';
-        $cats .='<div class="cscat"><p id="cat-'.$rowc['id'].'" style="background-color:#444; color:white; z-index:100; position:sticky; top:0px;">'.$rowc['nombre'].'</p>';
-        $sqls = "SELECT id, nombre FROM Subcategories WHERE categId='".$rowc['id']."';";
-        $results = $conn->query($sqls);
-        $cats .= '<div class="column">';
-        if ($results->num_rows > 0) {
-            while($rows = $results->fetch_assoc()) {
-                $colorsub = (is_int($colcolsub/2)) ? 'has-background-grey-lighter ': false;
-                $colcolsub++;
-                $cats .= '<div class="scat block">';
-                $cats .= '<div class="columns is-1 is-mobile '.$colorsub.'">';
-                $cats .= '<div class="column '.$colorsub.'is-one-third"><p style="position:sticky; top:2em;">'.$rows['nombre'].'</div>';
-                $sqlt = "SELECT id, nombre FROM Topics WHERE subcatId='".$rows['id']."';";
-                $resultt = $conn->query($sqlt);
-                $cats .= '<div class="column is-mobile">';
-                if ($results->num_rows > 0) {
-                    $cats .= '<ul">';
-                    while($rowt = $resultt->fetch_assoc()) {
-                        $elnombre=$rowt['nombre'];
-                        if (substr($elnombre,-12) == '[Unassigned]'){
-                            $unassig = ' disabled';
-                        } else {
-                            $unassig = '';
-                        }
-                        $selctd = ($rowt['id'] == @$topicid) ? 'checked' : false;
-
-
-
-                        $cats .= '
-	    <li class="top"><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '. $selctd.' '.$unassig.' required> '.$rowt['nombre'].'</label></li>';
-                    }
-                    $cats .= '</ul></div></div>';
-                } else {
-                    $cats .= 'no hay topicos';
-                }
-                $cats .= '</div>';
-            }
-
-            $cats .= '</div>';
-
-        } else {
-            $cats .= 'no hay subcats';
-        }
-        $cats .= '</div>';
+    // salida al internet exterior
+    $salida = '';
+    $vertokS = "SELECT mstin, msttk, twitr, tg_id FROM Tokens WHERE usrid='$id';"; // VERifica TOKens 
+    $vertokQ = $conn->query($vertokS);
+    $vertokL = $vertokQ->fetch_row();
+    $hay = 0;
+    $salida = '   <div class="field">
+      <label class="label"><br>Notificar al exterior</label>
+    ';
+    if (!empty($vertokL[0])){
+	$hay++;
+	$salida .='
+      <input type="checkbox" name="tokensal[]" value="1"> Tootear nuevo link<br>
+	';
     }
 
-    $cats .= '';
-} else {
-    $cats .= 'no hay cats';
-}
+    if (!empty($vertokL[2])){
+	$hay++;
+	$salida .='
+      <input type="checkbox" name="tokensal[]" value="2"> Twittear nuevo link<br>
+	';
+    }
 
-$comboset='
+    if (!empty($vertokL[3])){
+	$hay++;
+	$salida .='
+      <input type="checkbox" name="tokensal[]" value="3"> Compartir nuevo link en telegram<br>
+	';
+    }
+    if ($hay < 3){
+	$salida .= '<br>Configura las notificaciones a otros servicios en <a href="?f=ep">Editar perfil</a>.';
+    }
+    
+    $salida .= '</div>';
+    // fin salida al internet exterior
+
+
+
+    // inicio categorias    
+    $cats ='';
+    $sqlc = "SELECT id, nombre FROM Categories WHERE catsetId = '$catset';";
+    $resultc = $conn->query($sqlc);
+
+    $colcol=0;
+    $colcolsub=0;
+    if ($resultc->num_rows > 0) {
+	$cats .= '<div style="max-height: 200px; width:100%; overflow-y:scroll; overflow-x:hidden;">';
+	while($rowc = $resultc->fetch_assoc()) {
+            $color = (is_int($colcol/2)) ? 'has-background-grey-light ': false;
+            $colcol++;
+
+            $combocat[] = array($rowc['id'],$rowc['nombre']);
+	    
+            $cats .='';
+            $cats .='<div class="cscat"><p id="cat-'.$rowc['id'].'" style="background-color:#444; color:white; z-index:100; position:sticky; top:0px;">'.$rowc['nombre'].'</p>';
+            $sqls = "SELECT id, nombre FROM Subcategories WHERE categId='".$rowc['id']."';";
+            $results = $conn->query($sqls);
+            $cats .= '<div class="column">';
+            if ($results->num_rows > 0) {
+		while($rows = $results->fetch_assoc()) {
+                    $colorsub = (is_int($colcolsub/2)) ? 'has-background-grey-lighter ': false;
+                    $colcolsub++;
+                    $cats .= '<div class="scat block">';
+                    $cats .= '<div class="columns is-1 is-mobile '.$colorsub.'">';
+                    $cats .= '<div class="column '.$colorsub.'is-one-third"><p style="position:sticky; top:2em;">'.$rows['nombre'].'</div>';
+                    $sqlt = "SELECT id, nombre FROM Topics WHERE subcatId='".$rows['id']."';";
+                    $resultt = $conn->query($sqlt);
+                    $cats .= '<div class="column is-mobile">';
+                    if ($results->num_rows > 0) {
+			$cats .= '<ul">';
+			while($rowt = $resultt->fetch_assoc()) {
+                            $elnombre=$rowt['nombre'];
+                            if (substr($elnombre,-12) == '[Unassigned]'){
+				$unassig = ' disabled';
+                            } else {
+				$unassig = '';
+                            }
+                            $selctd = ($rowt['id'] == @$topicid) ? 'checked' : false;
+
+
+
+                            $cats .= '
+	    <li class="top"><label class="radio"><input type="radio" name="topic" value="'.$rowt['id'].'" '. $selctd.' '.$unassig.' required> '.$rowt['nombre'].'</label></li>';
+			}
+			$cats .= '</ul></div></div>';
+                    } else {
+			$cats .= 'no hay topicos';
+                    }
+                    $cats .= '</div>';
+		}
+
+		$cats .= '</div>';
+
+            } else {
+		$cats .= 'no hay subcats';
+            }
+            $cats .= '</div>';
+	}
+
+	$cats .= '';
+    } else {
+	$cats .= 'no hay cats';
+    }
+
+    $comboset='
 <div class="columns">
 	    <div class="column">
         <label class="label is-small">Set de categorías</label>
@@ -118,15 +157,15 @@ $comboset='
 	    <span class="select is-small">
 	    <select id="catset" name="catset" onchange="cargasetcat();">';
 
-$ss='SELECT * FROM Catsets;';
-$sq=$conn->query($ss);
-if ($sq->num_rows > 0){
-    while ($sl = $sq->fetch_assoc()){
-        $slectd = ($sl['id'] == @$catset) ? 'selected' : false;
-        $comboset .= '<option value="'.$sl['id'].'" '.$slectd.'>'.$sl['nombre'] . '</option> - ';		    
+    $ss='SELECT * FROM Catsets;';
+    $sq=$conn->query($ss);
+    if ($sq->num_rows > 0){
+	while ($sl = $sq->fetch_assoc()){
+            $slectd = ($sl['id'] == @$catset) ? 'selected' : false;
+            $comboset .= '<option value="'.$sl['id'].'" '.$slectd.'>'.$sl['nombre'] . '</option> - ';		    
+	}
     }
-}
-$comboset .= '
+    $comboset .= '
 	    </select>
 	    </span>
 	    <span class="icon is-small is-left">
@@ -135,22 +174,22 @@ $comboset .= '
 	    </p>
 	    </div>
 
-';
+    ';
 
 
 
 
-$combo='
+    $combo='
 	    <div class="column">
       <label class="label is-small">ir directo a categoría</label>
 	    <p class="control has-icons-left">
 	    <span class="select is-small">
 	    <select  onchange="jump();" id="combocats">';
-foreach ($combocat as &$comcat){
-    $combo .= '<option value="'.$comcat[0].'">'.$comcat[1] . '</option> - ';
-}
+    foreach ($combocat as &$comcat){
+	$combo .= '<option value="'.$comcat[0].'">'.$comcat[1] . '</option> - ';
+    }
 
-$combo .= '
+    $combo .= '
 	    </select>
 	    </span>
 	    <span class="icon is-small is-left">
@@ -159,22 +198,23 @@ $combo .= '
 	    </p>
 	    </div>
 </div>
-';
-$buscarapida ='
+    ';
+    $buscarapida ='
 
 <script>
 
 </script>
-<div class="field"><label class="label is-small">Búsqueda rápida</label><input class="input is-small" onkeyup="buscarap()" style="width:100%" id="br"></div>';
-$cats = $comboset . $combo . $buscarapida. '<div id="cats">'.$cats.'</div>';
+<div class="field"><input class="input is-small" onkeyup="buscarap()" style="width:100%" id="br"></div>';
+    $cats = '<div id="cats">'.$cats.'</div>'.$buscarapida;
 
-$contenido[] = '
+    $contenido[] = '
 <form action="?f='.$formedit.'" method="POST">'.@$formidfield.'
 
 <div class="columns">
   <div class="column">
+'.$comboset.$combo.'
     <div class="field">
-      <label class="label">Título</label>
+      <label class="label"><big>Título</big></label>
       <input name="titulo" class="input" type="text"'.@$titulo.'placeholder="De qué trata este link" required>
     </div>
     <div class="field">
@@ -205,6 +245,7 @@ $contenido[] = '
      <div class="control">
        <button type="submit" class="button is-primary is-large">'.$actionform.' link</button>
      </div>
+       '.$salida.'
   </div>
 </div>
 
