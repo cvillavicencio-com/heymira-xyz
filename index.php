@@ -146,7 +146,9 @@ if (isset($_GET['f'])){
 
           $findelsitio = floatval(microtime());
 $tiempodesitio = $findelsitio - $iniciodelsitio;
-echo 'Tiempo de carga: ' . substr($tiempodesitio,0,6);
+$tpocarga = substr($tiempodesitio,0,6);
+$tpocarga = floatval($tpocarga) < 0 ? "0.0000419" : $tpocarga;
+echo 'Tiempo de carga: ' . $tpocarga;
 ?>
     </p>
 
