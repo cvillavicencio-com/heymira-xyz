@@ -21,34 +21,34 @@ if ( $u || $cat || $sub || $top ) {
 
     $opcionquery=' WHERE ';
     if ($u){
-	$quser="SELECT nombre FROM Users WHERE id = '$u';";
-	$ruser=$conn->query($quser)->fetch_row();
-	$filtro.=' del usuario '.$ruser['0'];
-	$opcionquery .=" usrid='$u' ";
+				$quser="SELECT nombre FROM Users WHERE id = '$u';";
+				$ruser=$conn->query($quser)->fetch_row();
+				$filtro.=' del usuario '.$ruser['0'];
+				$opcionquery .=" usrid='$u' ";
         $ppag.='&u='.$u;
     }
     if ( $u && ($cat || $sub || $top) ){
-	$opcionquery .=' AND ';
+				$opcionquery .=' AND ';
     }
     if ( $cat ){
-	$qcat="SELECT nombre FROM Categories WHERE id = '$cat'";
-	$rcat=$conn->query($qcat)->fetch_row();
-	$filtro.=' en categoría <i>'.$rcat['0'].'</i>';
-	$opcionquery .="  catid = '$cat' ";
+				$qcat="SELECT nombre FROM Categories WHERE id = '$cat'";
+				$rcat=$conn->query($qcat)->fetch_row();
+				$filtro.=' en categoría <i>'.$rcat['0'].'</i>';
+				$opcionquery .="  catid = '$cat' ";
         $ppag.='&cat='.$cat;
 
     } elseif ( $sub ){
-	$qsub="SELECT nombre FROM Subcategories WHERE id = '$sub'";
-	$rsub=$conn->query($qsub)->fetch_row();
-	$filtro.=' en subcategoría <i>'.$rsub['0'].'</i>';
-	$opcionquery .="  subcatid = '$sub' ";
+				$qsub="SELECT nombre FROM Subcategories WHERE id = '$sub'";
+				$rsub=$conn->query($qsub)->fetch_row();
+				$filtro.=' en subcategoría <i>'.$rsub['0'].'</i>';
+				$opcionquery .="  subcatid = '$sub' ";
         $ppag.='&sub='.$sub;
 
     } elseif ( $top ){
-	$qtop="SELECT nombre FROM Topics WHERE id = '$top'";
-	$rtop=$conn->query($qtop)->fetch_row();
-	$filtro.=' en tópico <i>'.$rtop['0'].'</i>';
-	$opcionquery .="  topicid = '$top' ";
+				$qtop="SELECT nombre FROM Topics WHERE id = '$top'";
+				$rtop=$conn->query($qtop)->fetch_row();
+				$filtro.=' en tópico <i>'.$rtop['0'].'</i>';
+				$opcionquery .="  topicid = '$top' ";
         $ppag.='&top='.$top;
     }
 
@@ -109,7 +109,7 @@ if ($log){
     $permisos = explode(',',$rolL[1]);
 
     if (in_array('ep',$permisos)){
-	$paginadorarriba=true;	    
+				$paginadorarriba=true;	    
     }
     // hasta acá.
 }
@@ -129,10 +129,10 @@ if ($result->num_rows > 0) {
     $listaok=true;
     while($row = $result->fetch_assoc()) {
 
-	$r = substr(sha1($row['cat']),0,3);
-	$colorfond = '#'.substr($r,0,1).'d'.substr($r,1,1).'d'.substr($r,2,1).'d';
+				$r = substr(sha1($row['cat']),0,3);
+				$colorfond = '#'.substr($r,0,1).'d'.substr($r,1,1).'d'.substr($r,2,1).'d';
 
-	$listalinks .= '
+				$listalinks .= '
 <div class="column">
 <div class="clink">
 <div class="columns linkbox" style="border: solid '.$colorfond.' 1px;" >
@@ -143,9 +143,14 @@ if ($result->num_rows > 0) {
   <a rel="noreferrer noopener nofollow" target="_blank" href="'.$row['url'].'"><small><span class="icon-link"></span> Ver link</small></a>
 
 </span>
-
 <br>
+	';
+				if ($log){
+						$listalinks .= '
 <span class="icon-user"></span>  <span class="autor"><a href="?f=up&id='.$row['usrid'].'">'.$row['user'].'</a></span>
+';
+                }
+				$listalinks .= '
 </div>
 <div class="column">
 
@@ -173,15 +178,15 @@ if ($result->num_rows > 0) {
 </div>
 </div>
   ';
-	if (is_int($columncount/3)){  // cantidad de columnas, acá :D
-	    $listalinks .='</div> <div class="columns">';
-	    $listaok=false;
-	} else {
-	    $listaok=true;
-	}
-	$columncount++;
-	
-	/*
+				if (is_int($columncount/3)){  // cantidad de columnas, acá :D
+						$listalinks .='</div> <div class="columns">';
+						$listaok=false;
+				} else {
+						$listaok=true;
+				}
+				$columncount++;
+				
+				/*
            SELECT Links.id, Links.info, Links.url, Links.urlextra, Links.creado,
            Users.id AS 'usrid', Users.nombre AS 'user',
            Topics.id AS 'topicid', Topics.nombre AS 'topic',
@@ -189,8 +194,8 @@ if ($result->num_rows > 0) {
            Categories.id AS 'catid', Categories.nombre As 'cat'
          */ 
 
-	
-	//    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
+				
+				//    $listalinks .= "  <div class=\"box\">" . $row["url"]. " - " . $row["info"]. " - " . $row["creado"]. "</div>";
     }
 }
 $listalinks.='</div>';
@@ -205,5 +210,5 @@ $contenido[]=$listalinks;
 
 
 ?>
-    
-  
+
+

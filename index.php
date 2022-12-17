@@ -75,11 +75,10 @@ if (isset($_GET['f'])){
         <html class="cbody-<?php echo $tema; ?>">
 	    <head>
 		<meta charset="utf-8" />
-
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta content="<?php echo @$ogtitle; ?>" property='og:title'>
-		<meta content="<?php echo @$ogdescr; ?>" property='og:description'>
-		<meta content="<?php echo "https://heymira.xyz/"@$ogurl; ?>" property='og:url'>
+		<meta content="<?php echo @$ogtitle; ?>" property="og:title">
+		<meta content="<?php echo @$ogdescr; ?>" property="og:description">
+		<meta content="<?php echo "https://heymira.xyz/".@$ogurl; ?>" property='og:url'>
 		<meta content="<?php echo "Heymira.xyz"; ?>" property='og:site_name'>      
       <title>HeyMira!</title>
       <link rel="stylesheet" href="css/style.css">

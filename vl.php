@@ -20,7 +20,7 @@ if (is_int(intval($l))){  // ver link
 
 
 	$ogtitle=$ll['1'].' - heymira.xyz';
-	$ogdescr=substr($ll['2']);
+	$ogdescr=substr($ll['2'],0,10).'...';
 	$ogurl="?l=".$ll['0'];
 	
 	$contenido[] = $ll['1'];
