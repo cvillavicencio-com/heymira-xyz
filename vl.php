@@ -197,7 +197,7 @@ if (is_int(intval($l))){  // ver link
   <div class="column is-one-third">
     <div class="box">
 	  <b>'.$ll['1'].'</b><br>
-          <a rel="noreferrer noopener nofollow" href="'.$ll['3'].'">'.$ll['3'].' <span class="icon-link"></span></a>';
+          <a target="_blank" rel="noreferrer noopener nofollow" href="'.$ll['3'].'">'.$ll['3'].' <span class="icon-link"></span></a>';
 	if (!empty($ll['4'])) {
 	    $vistalink .= '
           <br><br>
