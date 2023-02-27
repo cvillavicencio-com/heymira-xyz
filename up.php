@@ -6,49 +6,49 @@ $cQ = $conn->query($cS);
 $cL = $cQ->fetch_row();
 
 if (empty($cL[0])){
-    $contenido = array('No',imgredirect('css/ojo.gif','.','Usuario no existe',true));
+  $contenido = array('No',imgredirect('css/ojo.gif','.','Usuario no existe',true));
 } else {
-    $us = "SELECT DISTINCT *, Roles.info FROM Userinfo INNER JOIN Roles ON Roles.id = Userinfo.rolId WHERE Userinfo.id = '$idup';";
-    $uq = $conn->query($us) or die(mysqli_error());
-    $ul = $uq->fetch_row();
+  $us = "SELECT DISTINCT *, Roles.info FROM Userinfo INNER JOIN Roles ON Roles.id = Userinfo.rolId WHERE Userinfo.id = '$idup';";
+  $uq = $conn->query($us) or die(mysqli_error());
+  $ul = $uq->fetch_row();
 
-    $contenido[] = 'Perfil de '.$ul['1'];
+  $contenido[] = 'Perfil de '.$ul['1'];
 
 
-    $optags = '<img src="css/constru.png"><br>';
+  $optags = '<img src="css/constru.png"><br>';
 
-    $iS = "SELECT * FROM Refers WHERE ownerId = '$id' AND userId = '' IS NULL;";
-    $iQ = $conn->query($iS);
-    if ($iQ->num_rows > 0 && $idup == @$id) {
-	$optags .= '<hr><b>Invitaciones disponibles</b>';
+  $iS = "SELECT * FROM Refers WHERE ownerId = '$id' AND userId = '' IS NULL;";
+  $iQ = $conn->query($iS);
+  if ($iQ->num_rows > 0 && $idup == @$id) {
+		$optags .= '<hr><b>Invitaciones disponibles</b>';
 
-	while($iL = $iQ->fetch_assoc()) {
+		while($iL = $iQ->fetch_assoc()) {
 	    $optags .= '<br>- <a href="https://heymira.xyz/inv='.$iL['code'].'">https://heymira.xyz/inv='.$iL['code'].'</a>';
-            
-	}
-    } 
+      
+		}
+  } 
 
 
 
 
 
-    $linkstopics= '';
-    $total=0;
-    $lt = "SELECT * FROM Usertopics WHERE userid='$idup';";
-    $ltq= $conn->query($lt);
-    $linkstopics .= '<div class="columns">';
-    $linkstopics .= '<div class="column is-one-half">'.$optags.'</div>';
-    $linkstopics .= '<div class="column is-one-half"><b>Participación</b><br>';
-    if ($ltq->num_rows > 0) {
-	while($rowlt = $ltq->fetch_assoc()) {
-            $total += intval($rowlt['total']);
-            $usertopics[]= array($rowlt['topicid'], $rowlt['topic'], $rowlt['total']);
-	}
+  $linkstopics= '';
+  $total=0;
+  $lt = "SELECT * FROM Usertopics WHERE userid='$idup';";
+  $ltq= $conn->query($lt);
+  $linkstopics .= '<div class="columns">';
+  $linkstopics .= '<div class="column is-one-half">'.$optags.'</div>';
+  $linkstopics .= '<div class="column is-one-half"><div><b>Participación</b></div><div class="partbox">';
+  if ($ltq->num_rows > 0) {
+		while($rowlt = $ltq->fetch_assoc()) {
+      $total += intval($rowlt['total']);
+      $usertopics[]= array($rowlt['topicid'], $rowlt['topic'], $rowlt['total']);
+		}
 
 
-	$columncount=1;
-	foreach ($usertopics as &$ut){
-            $percent = intval($ut[2]*100/$total);
+		$columncount=1;
+		foreach ($usertopics as &$ut){
+      $percent = intval($ut[2]*100/$total);
 	    $getinfoS = "
 SELECT DISTINCT Topics.id AS 'idtop', 
        Topics.nombre AS 'ntop', 
@@ -68,23 +68,23 @@ WHERE Topics.id = '{$ut[0]}'; ";
 	    $getinfoL = $getinfoQ->fetch_row();
 	    $linkstopics .= '<b>'.$getinfoL[6].'</b> / '; 
 	    $linkstopics .= '<a href="?cat='.$getinfoL[4].'&u='.$id.'">'.$getinfoL[5].'</a> / ';
-            $linkstopics .= '<a href="?sub='.$getinfoL[2].'&u='.$id.'">'.$getinfoL[3].'</a> / ';
-            $linkstopics .= '<a href="?top='.$ut[0].'&u='.$id.'">'.$ut[1].' ('.$ut[2].')</a><progress class="progress is-small" value="'.$percent.'" max="100">20%</progress><br>';
+      $linkstopics .= '<a href="?sub='.$getinfoL[2].'&u='.$id.'">'.$getinfoL[3].'</a> / ';
+      $linkstopics .= '<a href="?top='.$ut[0].'&u='.$id.'">'.$ut[1].' ('.$ut[2].')</a><progress class="progress is-small" value="'.$percent.'" max="100">20%</progress><br>';
 
 
 	    $columncount++;
 
-	}
-    }
-    $linkstopics .= '</div>';
-    $linkstopics .= '</div>';
+		}
+  }
+  $linkstopics .= '</div></div>';
+  $linkstopics .= '</div>';
 
-    $editperfil = ($idup == @$id) ? '<p><a href="?f=ep"><button class="button is-warning">Editar perfil</button></a></p>' : false;
+  $editperfil = ($idup == @$id) ? '<p><a href="?f=ep"><button class="button is-warning">Editar perfil</button></a></p>' : false;
 
-    // $idup.'-'.strlen($ul[1])
+  // $idup.'-'.strlen($ul[1])
 
-    $avatar = (file_exists('avatars/'.$idup.'-'.strlen($ul[1]).'.png')) ? $idup.'-'.strlen($ul[1]) : 'default';
-    $contenido[] = '
+  $avatar = (file_exists('avatars/'.$idup.'-'.strlen($ul[1]).'.png')) ? $idup.'-'.strlen($ul[1]) : 'default';
+  $contenido[] = '
 	<div class="card">
 	<div class="card-content">
 	<div class="columns">
@@ -99,7 +99,7 @@ WHERE Topics.id = '{$ut[0]}'; ";
         </div>
 	</div>
 	<div class="column">
-	'.nl2br($ul[2]).'
+				'.nl2br($ul[2]).'
 	</div>
 	</div>
 	</div>
@@ -107,10 +107,10 @@ WHERE Topics.id = '{$ut[0]}'; ";
 <br>
 	<div class="card">
 	<div class="card-content">
-	'.$linkstopics.'
+				'.$linkstopics.'
 	</div>
 	</div>
 
-	';
+				';
 }
 ?>
