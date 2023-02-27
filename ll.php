@@ -14,7 +14,7 @@ $opcionquery='';
 $filtro='';
 
 $ppag ='';
-$linksporpag=12;
+$linksporpag=24;
 $limit = $pag ? "LIMIT $linksporpag OFFSET ".($linksporpag * ($pag-1)) : 'LIMIT '.$linksporpag;
 
 if ( $u || $cat || $sub || $top ) {
